@@ -1,0 +1,11 @@
+package:
+  name: bbplay-server
+  version: 0.1.0
+  description: Backend for the bbplay app.
+  author: Niklas Rosenstein <rosensteinniklas@gmail.com>
+  entry_file: src/bbplay/server/__init__.py
+
+requirements:
+  - flask ^1.1.1
+  - nr.databind ^0.1.0
+  - pony ^0.7.11
