@@ -136,9 +136,8 @@ class User(db.Entity):
 
 class Token(db.Entity):
   user = orm.Required(User)
-  value = orm.Required(str, default=lambda: str(uuid.uuid4()))  # TODO (@NiklasRosenstein): Security considerations
+  value = orm.PrimaryKey(str, default=lambda: str(uuid.uuid4()))  # TODO (@NiklasRosenstein): Security considerations
   expires_at = orm.Required(datetime, default=lambda: datetime.utcnow() + timedelta(days=2))  # TODO (@NiklasRosenstein): Configurable
-  orm.PrimaryKey(user, value)
 
 
 class Resource(db.Entity):
