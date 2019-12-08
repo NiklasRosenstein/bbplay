@@ -38,6 +38,31 @@ class InitialUserRole(Struct):
       logger.info('Created initial user {!r}'.format(self.username))
 
 
+@register_role_consumer('initial-resource')
+class InitialResourceRole(Struct):
+  id = Field(str)
+
+  @classmethod
+  @orm.db_session
+  def execute_once(self):
+    logger = logging.getLogger(__name__)
+    logger.info('Bulk-deleting initial resources')
+    Resource.select(lambda r: r.initial).delete(bulk=True)
+
+  @orm.db_session
+  def execute(self):
+    logger = logging.getLogger(__name__)
+    resource = Resource.get(id=self.id)
+    if resource is not None:
+      if resource.initial:
+        logger.warn('InitialResourceRole {!r} already exists'.format(self.id))
+      else:
+        logger.error('InitialResourceRole {!r} is a non-initial resource'.format(self.id))
+      return
+    resource = Resource(id=self.id, initial=True)
+    logger.info('InitialResourceRole {!r} created'.format(self.id))
+
+
 class User(db.Entity):
   """ Represents a user. An initial user can only be modified from the
   configuration file. At startup, all initial users are re-set. """

@@ -13,3 +13,5 @@ runtime:
     - role: initial-user
       username: admin
       password: admin
+    - role: initial-resource
+      id: ri.management.0
