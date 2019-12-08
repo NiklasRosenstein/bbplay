@@ -1,7 +1,7 @@
 
 from nr.databind.core import Field, Struct, ObjectMapper
 from nr.databind.json import JsonModule, JsonFieldName
-from nr.databind.contrib import preprocessor
+from nr.databind.contrib.preprocessor import config_preprocess, Include, Vars
 import os
 import yaml
 
@@ -29,15 +29,13 @@ class RuntimeConfig(Struct):
 def load_config(filename, service_root):
   with open(filename) as fp:
     config = yaml.safe_load(fp)
-
-  vars_plugin = preprocessor.Vars({'$serviceRoot': service_root})
-  preproc = preprocessor.Preprocessor([
-    vars_plugin,
-    preprocessor.Include(os.path.dirname(filename), yaml.safe_load)
-  ])
-
-  vars_plugin.flat_update(preproc.process(config.pop('config')))
-  runtime = preproc.process(config['runtime'])
-
+  runtime = config_preprocess(
+    config['config'],
+    config['runtime'],
+    plugins=[
+      Vars({'$serviceRoot': service_root}),
+      Include(os.path.dirname(filename), yaml.safe_load)
+    ]
+  )
   return ObjectMapper(JsonModule()).deserialize(
     runtime, RuntimeConfig, filename=filename)
