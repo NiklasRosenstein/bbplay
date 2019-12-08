@@ -23,6 +23,11 @@ def main():
   db.bind(**config.server.database)
   db.generate_mapping(create_tables=True)
 
+  from bbplay.server import views
+
+  app.run(debug=config.server.debug)
+
 
 if __name__ == '__main__':
+  from bbplay.server.app import main
   main()

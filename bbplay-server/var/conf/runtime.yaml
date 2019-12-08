@@ -3,7 +3,9 @@ config:
     data: '{{$serviceRoot}}/var/data'
 runtime:
   server:
+    debug: true
     database:
       provider: sqlite
       filename: '{{directories.data}}/db.sqlite'
       create_db: true
+  credentials: '{{!include credentials.yaml}}'
