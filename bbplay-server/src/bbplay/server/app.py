@@ -1,6 +1,7 @@
 
 from nr.proxy import Proxy, proxy_set_value
 from .config import load_config
+from .config.roles import execute_role_consumers
 from .models import db
 import argparse
 import flask
@@ -24,6 +25,8 @@ def main():
   db.generate_mapping(create_tables=True)
 
   from bbplay.server import views
+
+  execute_role_consumers(config.produces)
 
   app.run(debug=config.server.debug)
 

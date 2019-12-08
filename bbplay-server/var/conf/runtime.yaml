@@ -2,10 +2,14 @@ config:
   directories:
     data: '{{$serviceRoot}}/var/data'
 runtime:
+  credentials: '{{!include credentials.yaml}}'
   server:
     debug: true
     database:
       provider: sqlite
       filename: '{{directories.data}}/db.sqlite'
       create_db: true
-  credentials: '{{!include credentials.yaml}}'
+  produces:
+    - role: initial-user
+      username: admin
+      password: admin

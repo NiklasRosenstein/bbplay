@@ -24,6 +24,7 @@ class ServerConfig(Struct):
 class RuntimeConfig(Struct):
   credentials = Field(CredentialsConfig)
   server = Field(ServerConfig)
+  produces = Field([dict])
 
 
 def load_config(filename, service_root):
