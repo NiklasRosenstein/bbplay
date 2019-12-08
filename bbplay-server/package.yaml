@@ -10,4 +10,5 @@ requirements:
   - google-api-python-client ~1.7.11
   - nr.commons ~0.1.0
   - nr.databind ~0.1.0
+  - qrcode ^6.1
   - pony ~0.7.11

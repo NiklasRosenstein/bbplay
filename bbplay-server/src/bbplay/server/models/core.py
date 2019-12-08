@@ -1,11 +1,14 @@
 
 from . import db
 from ..config.roles import register_role_consumer
-from nr.databind.core import Field, Struct
+from datetime import datetime, timedelta
+from nr.databind.core import Field, Struct, UnionType
 from nr.databind.json import JsonFieldName
 from pony import orm
+from typing import Union
 import hashlib
 import logging
+import uuid
 
 
 @register_role_consumer('initial-user')
@@ -14,7 +17,6 @@ class InitialUserRole(Struct):
   password = Field(str, default=None)
   password_hash = Field(str, JsonFieldName('password-hash'), default=None)
 
-  @orm.db_session
   def execute(self):
     logger = logging.getLogger(__name__)
     if not self.password and not self.password_hash:
@@ -43,13 +45,11 @@ class InitialResourceRole(Struct):
   id = Field(str)
 
   @classmethod
-  @orm.db_session
   def execute_once(self):
     logger = logging.getLogger(__name__)
     logger.info('Bulk-deleting initial resources')
     Resource.select(lambda r: r.initial).delete(bulk=True)
 
-  @orm.db_session
   def execute(self):
     logger = logging.getLogger(__name__)
     resource = Resource.get(id=self.id)
@@ -63,6 +63,38 @@ class InitialResourceRole(Struct):
     logger.info('InitialResourceRole {!r} created'.format(self.id))
 
 
+@register_role_consumer('initial-resource-additions')
+class InitialResourceAdditionsRole(Struct):
+  class UsernameStatement(Struct):
+    usernames = Field([str])
+
+  id = Field(str)
+  permissions = Field([str])
+  statements = Field([UnionType({
+    "username": UsernameStatement
+  })])
+
+  def execute(self):
+    logger = logging.getLogger(__name__)
+    resource = Resource.get(id=self.id)
+    if not resource:
+      logger.error('InitialResourceAdditionsRole resource {!r} does not exist'.format(self.id))
+      return
+    if not resource.initial:
+      logger.error('InitialResourceAdditionsRole resource {!r} must be initial'.format(self.id))
+      return
+    for statement in self.statements:
+      assert isinstance(statement, self.UsernameStatement)
+      for username in statement.usernames:
+        user = User.get(username=username)
+        if not user:
+          logger.error('InitialResourceAdditionsRole user {!r} does not exist'
+            .format(username))
+          continue
+        for perm in self.permissions:
+          Permission(name=perm, user=user, resource=resource)
+
+
 class User(db.Entity):
   """ Represents a user. An initial user can only be modified from the
   configuration file. At startup, all initial users are re-set. """
@@ -71,6 +103,7 @@ class User(db.Entity):
   password_hash = orm.Required(str)
   initial = orm.Required(bool, default=False)
   permissions = orm.Set('Permission')
+  tokens = orm.Set('Token')
 
   def __init__(self, **kwargs):
     password = kwargs.pop('password', None)
@@ -80,9 +113,32 @@ class User(db.Entity):
     if password is not None:
       self.set_password(password)
 
-  def set_password(self, password):
+  def set_password(self, password: str):
     password += 'ThisIsMySalt(*'  # TODO (@NiklasRosenstein)
     self.password_hash = hashlib.sha256(password.encode('utf8')).hexdigest()
+
+  @classmethod
+  def get_for_token(cls, token_str: str) -> 'Token':
+    token = Token.get(value=token_str)
+    if token and token.expires_at < datetime.utcnow():
+      token.delete()
+      return None
+    return token.user if token else None
+
+  def create_token(self) -> 'Token':
+    return Token(user=self)
+
+  def check_permission(self, resource: Union[str, 'Resource'], perm: str) -> bool:
+    if isinstance(resource, str):
+      resource = Resource[resource]
+    return Permission.get(name=perm, user=self, resource=resource) is not None
+
+
+class Token(db.Entity):
+  user = orm.Required(User)
+  value = orm.Required(str, default=lambda: str(uuid.uuid4()))  # TODO (@NiklasRosenstein): Security considerations
+  expires_at = orm.Required(datetime, default=lambda: datetime.utcnow() + timedelta(days=2))  # TODO (@NiklasRosenstein): Configurable
+  orm.PrimaryKey(user, value)
 
 
 class Resource(db.Entity):

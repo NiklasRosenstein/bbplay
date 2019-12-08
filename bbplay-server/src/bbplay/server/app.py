@@ -1,8 +1,9 @@
 
-from nr.proxy import Proxy, proxy_set_value
 from .config import load_config
 from .config.roles import execute_role_consumers
 from .models import db
+from nr.proxy import Proxy, proxy_set_value
+from pony import orm
 import argparse
 import flask
 import os
@@ -26,9 +27,11 @@ def main():
 
   from bbplay.server import views
 
-  execute_role_consumers(config.produces)
+  with orm.db_session:
+    execute_role_consumers(config.produces)
 
-  app.run(debug=config.server.debug)
+  app.run(debug=config.server.debug, host=config.server.host,
+    port=config.server.port)
 
 
 if __name__ == '__main__':

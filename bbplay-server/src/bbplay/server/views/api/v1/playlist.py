@@ -1,0 +1,76 @@
+
+from bbplay.server.app import app, config
+from bbplay.server.models.playlist import *
+from bbplay.server.common.views.auth import require_auth, authenticate
+from bbplay.server.common.views.rest import body_accepts, json_response
+from flask import abort, request
+from nr.databind.core import Field, Struct
+from nr.databind.json import JsonFieldName
+from pony import orm
+
+
+class Resources(object):
+  Management = 'ri.management.0'
+
+
+class Permissions(object):
+  ManagePlaylist = 'playlist:manage'
+
+
+class CreatePlaylistRequest(Struct):
+  name = Field(str)
+
+
+class DeletePlaylistRequest(Struct):
+  id = Field(int)
+
+
+class PutTrackRequest(Struct):
+  video_id = Field(str, JsonFieldName('videoId'))
+
+
+@app.route('/api/v1/playlist', methods=['POST'])
+@body_accepts(CreatePlaylistRequest)
+@orm.db_session
+@require_auth()
+def api_v1_playlist_create(req):
+  if not request.user.check_permission(Resources.Management, Permissions.ManagePlaylist):
+    abort(403)
+  playlist = Playlist(name=req.name)
+  orm.commit()
+  return json_response({'id': playlist.id})
+
+
+@app.route('/api/v1/playlist', methods=['DELETE'])
+@body_accepts(DeletePlaylistRequest)
+@orm.db_session
+@require_auth()
+def api_v1_playlist_delete(req):
+  if not request.user.check_permission(Resources.Management, Permissions.ManagePlaylist):
+    abort(403)
+  playlist = Playlist.get(id=req.id)
+  if not playlist:
+    abort(404)
+  playlist.delete()
+  return json_response(None)
+
+
+@app.route('/api/v1/playlist/all', methods=['GET'])
+@orm.db_session
+def api_v1_playlist_all():
+  results = []
+  for playlist in Playlist.select():
+    results.append({'id': playlist.id, 'name': playlist.name})
+  return json_response(results)
+
+
+@app.route('/api/v1/playlist/put', methods=['PUT'])
+@body_accepts(PutTrackRequest)
+@orm.db_session
+def api_v1_playlist_put(req):
+  """ Puts a track on the playlist. If the user is authenticated and the user
+  has the right permissions, the request will be granted. Anonymous users
+  may be limited to how many concurrent un-played tracks they can have in the
+  queue at any given time. """
+
+  raise NotImplementedError

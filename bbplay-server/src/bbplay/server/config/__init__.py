@@ -11,7 +11,7 @@ class CredentialsConfig(Struct):
 
   def create_youtube_client(self):
     from googleapiclient import discovery
-    from .clients.youtube import Youtube
+    from ..clients.youtube import Youtube
     service = discovery.build('youtube', 'v3', developerKey=self.youtube_data_api)
     return Youtube(service)
 
@@ -19,6 +19,14 @@ class CredentialsConfig(Struct):
 class ServerConfig(Struct):
   debug = Field(bool, default=False)
   database = Field(dict)
+  host = Field(str, default='localhost')
+  port = Field(int, default=5000)
+  external_url = Field(str, default=None)
+
+  def get_external_url(self):
+    if self.external_url is None:
+      return 'http://{}:{}'.format(self.host, self.port)
+    return self.external_url
 
 
 class RuntimeConfig(Struct):

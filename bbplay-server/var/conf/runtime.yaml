@@ -15,3 +15,9 @@ runtime:
       password: admin
     - role: initial-resource
       id: ri.management.0
+    - role: initial-resource-additions
+      id: ri.management.0
+      permissions: [playlist:manage]
+      statements:
+        - type: username
+          usernames: [admin]
