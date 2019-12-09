@@ -39,3 +39,12 @@ _Todo_
             # Serve the bundled application
         }
     }
+
+Replace the `frontend_url` in `var/conf/runtime.yaml` with the `external_url`
+for your NGinx server.
+
+```yaml
+runtime:
+  server:
+    external_url: 'https://example.org'
+```
