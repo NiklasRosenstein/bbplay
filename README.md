@@ -1,5 +1,15 @@
 # bbplay
 
+## Development Setup
+
+`bbplay-app` performs CORS requests to `bbplay-server` (under
+`http://localhost:5000`).
+
+_Todo_
+
+* [ ] Have the frontend bundle automatically pick the right URL, depending
+      on whether it is running in development or production
+
 ## bbplay-server
 
     $ python3 -m venv .venv
@@ -15,3 +25,17 @@
 
     $ cd bbplay-app
     $ yarn start
+
+## Production Setup
+
+`bbplay-app` and `bbplay-server` can be served via NGinx as the front-door.
+
+    server {
+        # ...
+        location /api {
+            proxy_pass https://localhost:5000;
+        }
+        location / {
+            # Serve the bundled application
+        }
+    }
