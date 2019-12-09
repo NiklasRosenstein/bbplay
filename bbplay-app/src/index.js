@@ -47,7 +47,20 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-  // If you want your app to work offline and load faster, you can change
-  // unregister() to register() below. Note this comes with some pitfalls.
-  // Learn more about service workers: https://bit.ly/CRA-PWA
+// Check if the user is properly authenticated, and if not, log them out
+// (removing the token cookie) and reload the page.
+if (client.isAuthenticated()) {
+  client.me().catch(async error => {
+    try {
+      await client.logout()
+    }
+    catch (error) {
+    }
+    window.location.reload(true)
+  })
+}
+
+// If you want your app to work offline and load faster, you can change
+// unregister() to register() below. Note this comes with some pitfalls.
+// Learn more about service workers: https://bit.ly/CRA-PWA
 serviceWorker.unregister();

@@ -10,7 +10,6 @@ class PlaylistCard extends React.Component<Playlist> {
 
   render() {
     return <Card className="playlist-card">
-      <span className="number">#{this.props.id}</span>
       <Link to={`/app/playlist/${this.props.id}`}>
         <span className="name">{this.props.name}</span>
         <span className="num-tracks"> ({this.props.numTracks})</span>

@@ -12,7 +12,8 @@ class LoginView extends React.Component<{}, LoginState> {
 
   state = {username: '', password: ''}
 
-  async postLogin() {
+  async postLogin(ev: React.MouseEvent<HTMLElement>) {
+    ev.preventDefault()
     let response = await client.login(this.state.username, this.state.password)
     window.location.reload()
   }
@@ -27,6 +28,7 @@ class LoginView extends React.Component<{}, LoginState> {
             small={true}
             placeholder="Username"
             value={this.state.username}
+            autoFocus
             onChange={(ev: React.ChangeEvent<HTMLInputElement>) =>
               this.setState({username: ev.currentTarget.value})}
               />
@@ -40,6 +42,7 @@ class LoginView extends React.Component<{}, LoginState> {
             />
           <Button
             text="Login"
+            type="submit"
             className="bp3-intent-primary"
             onClick={this.postLogin.bind(this)}
             />

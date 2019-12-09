@@ -12,6 +12,10 @@ export interface Playlist {
   numTracks?: number
 }
 
+export interface User {
+  username: string
+}
+
 class BbplayClient extends Client {
   token: string | null
   onTokenUpdate: OnTokenUpdate | null = null
@@ -24,6 +28,10 @@ class BbplayClient extends Client {
 
   isAuthenticated(): boolean {
     return this.token !== null
+  }
+
+  async me(): Promise<User> {
+    return this.requestJson('/v1/auth')
   }
 
   async login(username: string, password: string): Promise<boolean> {
@@ -39,21 +47,21 @@ class BbplayClient extends Client {
   }
 
   async logout(): Promise<void> {
-    await this.requestJson('/v1/auth', {
-      method: 'DELETE',
-      json: {token: this.token}
-    })
     this.token = null
     if (this.onTokenUpdate !== null) {
       this.onTokenUpdate(null)
     }
+    await this.requestJson('/v1/auth', {
+      method: 'DELETE',
+      json: {token: this.token}
+    })
   }
 
   async getPlaylists(): Promise<Playlist[]> {
     return await this.requestJson('/v1/playlist')
   }
 
-  async getPlaylist(id: number): Promise<Playlist> {
+  async getPlaylist(id: string): Promise<Playlist> {
     return await this.requestJson('/v1/playlist/' + id)
   }
 
