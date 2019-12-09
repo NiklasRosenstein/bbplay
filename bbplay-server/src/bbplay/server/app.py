@@ -57,6 +57,16 @@ def main():
   with orm.db_session:
     execute_role_consumers(config.produces)
 
+  if config.server.debug:
+    # Allow CORS in debug mode (frontend not served through the same server).
+    @app.after_request
+    def after_request(response):
+      response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+      response.headers['Access-Control-Allow-Methods'] = 'GET, DELETE, POST, PUT, OPTIONS'
+      response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'
+      response.headers['Access-Control-Allow-Credentials'] = 'true'
+      return response
+
   app.run(debug=config.server.debug, host=config.server.host,
     port=config.server.port)
 

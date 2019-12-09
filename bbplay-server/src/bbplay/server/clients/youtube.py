@@ -10,6 +10,17 @@ class Youtube(object):
     self._service = service
 
   def search(self, q, **kwargs):
+    # DEBUG OFFLINE
+    def get_page(page_token):
+      if q == 'league':
+        import json
+        with open('search-league.jsonl') as fp:
+          results = [json.loads(x) for x in fp]
+      else:
+        results = []
+      return Page(results, None)
+    return PaginatedList(get_page)
+
     kwargs['part'] = 'snippet'
     kwargs['q'] = q
     def get_page(page_token):

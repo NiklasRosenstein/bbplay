@@ -12,6 +12,7 @@ def body_accepts(struct_cls):
     @functools.wraps(func)
     def wrapper(*args, **kwargs):
       mapper = ObjectMapper(JsonModule())
+      print('>>>', request.json, request.headers['Content-type'])
       try:
         obj = mapper.deserialize(request.json, struct_cls)
       except (SerializationError, ValueError) as exc:

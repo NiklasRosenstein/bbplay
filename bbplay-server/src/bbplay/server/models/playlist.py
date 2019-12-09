@@ -12,6 +12,9 @@ class Playlist(db.Entity):
   date_created = orm.Required(datetime, default=datetime.utcnow)
   tracks = orm.Set('Track')
 
+  def to_json(self):
+    return {'id': self.id, 'name': self.name, 'numTracks': len(self.tracks)}
+
 
 class Track(db.Entity):
   playlist = orm.Required(Playlist)

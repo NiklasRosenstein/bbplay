@@ -29,16 +29,25 @@ class PutTrackRequest(Struct):
   video_id = Field(str, JsonFieldName('videoId'))
 
 
-@app.route('/api/v1/playlist', methods=['POST'])
+@app.route('/api/v1/playlist', methods=['GET'])
+@orm.db_session
+def api_v1_playlist_get():
+  results = []
+  for playlist in Playlist.select():
+    results.append(playlist.to_json())
+  return json_response(results)
+
+
+@app.route('/api/v1/playlist', methods=['PUT'])
 @body_accepts(CreatePlaylistRequest)
 @orm.db_session
 @require_auth()
-def api_v1_playlist_create(req):
+def api_v1_playlist_put(req):
   if not request.user.check_permission(Resources.Management, Permissions.ManagePlaylist):
     abort(403)
   playlist = Playlist(name=req.name)
   orm.commit()
-  return json_response({'id': playlist.id})
+  return json_response(playlist.to_json())
 
 
 @app.route('/api/v1/playlist', methods=['DELETE'])
@@ -55,19 +64,16 @@ def api_v1_playlist_delete(req):
   return json_response(None)
 
 
-@app.route('/api/v1/playlist/all', methods=['GET'])
+@app.route('/api/v1/playlist/<id>', methods=['GET'])
 @orm.db_session
-def api_v1_playlist_all():
-  results = []
-  for playlist in Playlist.select():
-    results.append({'id': playlist.id, 'name': playlist.name})
-  return json_response(results)
+def api_v1_playlist_single_get(id):
+  return json_response(Playlist[int(id)].to_json())
 
 
-@app.route('/api/v1/playlist/put', methods=['PUT'])
+@app.route('/api/v1/playlist/<id>', methods=['PUT'])
 @body_accepts(PutTrackRequest)
 @orm.db_session
-def api_v1_playlist_put(req):
+def api_v1_playlist_single_put(req):
   """ Puts a track on the playlist. If the user is authenticated and the user
   has the right permissions, the request will be granted. Anonymous users
   may be limited to how many concurrent un-played tracks they can have in the

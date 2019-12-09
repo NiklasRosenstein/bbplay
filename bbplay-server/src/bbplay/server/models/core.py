@@ -113,9 +113,16 @@ class User(db.Entity):
     if password is not None:
       self.set_password(password)
 
-  def set_password(self, password: str):
+  @staticmethod
+  def _hash_password(password: str) -> str:
     password += 'ThisIsMySalt(*'  # TODO (@NiklasRosenstein)
-    self.password_hash = hashlib.sha256(password.encode('utf8')).hexdigest()
+    return hashlib.sha256(password.encode('utf8')).hexdigest()
+
+  def set_password(self, password: str) -> None:
+    self.password_hash = self._hash_password(password)
+
+  def check_password(self, password: str) -> bool:
+    return self._hash_password(password) == self.password_hash
 
   @classmethod
   def get_for_token(cls, token_str: str) -> 'Token':
