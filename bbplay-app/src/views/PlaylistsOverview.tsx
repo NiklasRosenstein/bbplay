@@ -52,7 +52,7 @@ export default class PlaylistsOverview extends React.Component<{}, DashboardView
     if (playlist !== null) {
       let playlists = this.state.playlists as any[]
       playlists.push(playlist)
-      this.setState({playlists})
+      this.setState({playlists, playlistName: ''})
     }
   }
 
