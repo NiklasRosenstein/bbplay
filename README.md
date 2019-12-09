@@ -10,7 +10,7 @@ _Todo_
 * [ ] Have the frontend bundle automatically pick the right URL, depending
       on whether it is running in development or production
 
-## bbplay-server
+### bbplay-server
 
     $ python3 -m venv .venv
     $ . .venv/bin/activate
@@ -21,7 +21,7 @@ _Todo_
     $ pip install -e .
     $ python -m bbplay.server.app
 
-## bbplay-app
+### bbplay-app
 
     $ cd bbplay-app
     $ yarn start
