@@ -4,16 +4,21 @@ from .core import Resource
 from ..app import config
 from datetime import datetime
 from pony import orm
-import qrcode
+import uuid
 
 
 class Playlist(db.Entity):
+  id = orm.PrimaryKey(str, default=lambda: str(uuid.uuid4()))
   name = orm.Required(str)
   date_created = orm.Required(datetime, default=datetime.utcnow)
   tracks = orm.Set('Track')
 
   def to_json(self):
-    return {'id': self.id, 'name': self.name, 'numTracks': len(self.tracks)}
+    return {
+      'id': self.id,
+      'name': self.name,
+      'numTracks': len(self.tracks),
+      'htmlUrl': config.server.get_frontend_url() + '/app/playlist/' + self.id}
 
 
 class Track(db.Entity):

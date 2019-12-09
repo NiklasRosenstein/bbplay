@@ -9,14 +9,6 @@ from nr.databind.json import JsonFieldName
 from pony import orm
 
 
-class Resources(object):
-  Management = 'ri.management.0'
-
-
-class Permissions(object):
-  ManagePlaylist = 'playlist:manage'
-
-
 class CreatePlaylistRequest(Struct):
   name = Field(str)
 
@@ -43,8 +35,6 @@ def api_v1_playlist_get():
 @orm.db_session
 @require_auth()
 def api_v1_playlist_put(req):
-  if not request.user.check_permission(Resources.Management, Permissions.ManagePlaylist):
-    abort(403)
   playlist = Playlist(name=req.name)
   orm.commit()
   return json_response(playlist.to_json())
@@ -55,8 +45,6 @@ def api_v1_playlist_put(req):
 @orm.db_session
 @require_auth()
 def api_v1_playlist_delete(req):
-  if not request.user.check_permission(Resources.Management, Permissions.ManagePlaylist):
-    abort(403)
   playlist = Playlist.get(id=req.id)
   if not playlist:
     abort(404)
@@ -67,7 +55,7 @@ def api_v1_playlist_delete(req):
 @app.route('/api/v1/playlist/<id>', methods=['GET'])
 @orm.db_session
 def api_v1_playlist_single_get(id):
-  return json_response(Playlist[int(id)].to_json())
+  return json_response(Playlist[id].to_json())
 
 
 @app.route('/api/v1/playlist/<id>', methods=['PUT'])

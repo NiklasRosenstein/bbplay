@@ -17,6 +17,13 @@ class LoginResponse(Struct):
   token = Field(str)
 
 
+@app.route('/api/v1/auth', methods=['GET'])
+@orm.db_session
+@require_auth()
+def api_v1_auth_get():
+  return {'username': request.user.username}
+
+
 @app.route('/api/v1/auth', methods=['POST'])
 @body_accepts(LoginRequest)
 @orm.db_session

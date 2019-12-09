@@ -22,11 +22,17 @@ class ServerConfig(Struct):
   host = Field(str, default='localhost')
   port = Field(int, default=5000)
   external_url = Field(str, default=None)
+  frontend_url = Field(str, default=None)
 
   def get_external_url(self):
     if self.external_url is None:
       return 'http://{}:{}'.format(self.host, self.port)
     return self.external_url
+
+  def get_frontend_url(self):
+    if self.frontend_url is None:
+      return self.get_external_url()
+    return self.frontend_url
 
 
 class RuntimeConfig(Struct):
