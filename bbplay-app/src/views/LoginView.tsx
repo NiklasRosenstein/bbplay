@@ -14,7 +14,6 @@ class LoginView extends React.Component<{}, LoginState> {
 
   async postLogin() {
     let response = await client.login(this.state.username, this.state.password)
-    console.log(response)
     window.location.reload()
   }
 

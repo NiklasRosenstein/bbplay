@@ -1,6 +1,6 @@
 import React from 'react'
 import client, {Playlist} from '../client'
-import {InputGroup, Button} from '@blueprintjs/core'
+import {Icon, InputGroup, Button, Breadcrumbs, Breadcrumb, IBreadcrumbProps} from '@blueprintjs/core'
 
 type PlaylistViewProps = {
   id: number
@@ -28,24 +28,30 @@ export default class PlaylistView extends React.Component<PlaylistViewProps, Pla
 
   async youtubeSearch(ev: React.MouseEvent<HTMLElement>) {
     ev.preventDefault()
-    console.log(this.state)
     alert(this.state.searchString)
   }
 
   render() {
+    let breadcrumbs = [
+      { href: "/app", text: "Playlists" },
+      { text: this.state.playlist ? this.state.playlist.name : "Loading ..." }
+    ]
     return <div>
-      <h1>{this.state.playlist? this.state.playlist.name : "Loading ..."}</h1>
-      <form><div className="bp3-input-group">
+      <h1><Breadcrumbs items={breadcrumbs}/>
+      </h1>
+      <form>
         <InputGroup
+          leftIcon="search"
+          rightElement={<Button
+            type="submit"
+            icon="arrow-right"
+            onClick={this.youtubeSearch}/>}
+          placeholder="Search YouTube"
           value={this.state.searchString}
           onChange={(ev: React.ChangeEvent<HTMLInputElement>) => {
             this.setState({searchString: ev.currentTarget.value})
           }}/>
-        <Button
-          type="submit"
-          icon="arrow-right"
-          onClick={this.youtubeSearch}/>
-      </div></form>
+        </form>
     </div>
   }
 

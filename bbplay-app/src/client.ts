@@ -23,7 +23,6 @@ class BbplayClient extends Client {
   }
 
   isAuthenticated(): boolean {
-    console.log(this, this.token !== null)
     return this.token !== null
   }
 
@@ -69,7 +68,6 @@ class BbplayClient extends Client {
 
 let client = new BbplayClient('http://localhost:5000/api', cookies.load('bbplay-token'))
 client.onTokenUpdate = (token) => {
-  console.log('>>> onTokenUpdate:', token)
   if (token === null)
     cookies.remove('bbplay-token')
   else

@@ -90,12 +90,13 @@ code {
 
 .playlist-card {
   font-size: 200%;
-  border: 1px solid white;
+  /*border: 1px solid white;*/
 }
 
 .playlist-card .number {
   display: inline-block;
   padding: 0.5em;
+  width: 2.5em;
   margin-right: 0.5em;
   font-style: italic;
   border-right: 1px solid white;
