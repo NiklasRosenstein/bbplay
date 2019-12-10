@@ -11,3 +11,4 @@ requirements:
   - nr.commons ~0.1.0
   - nr.databind ~0.1.0
   - pony ~0.7.11
+  - PyYAML ~5.2

@@ -9,7 +9,7 @@ with io.open('src/bbplay/server/__init__.py', encoding='utf8') as fp:
 
 long_description = None
 
-requirements = ['flask >=1.1.1,<1.2.0', 'google-api-python-client >=1.7.11,<1.8.0', 'nr.commons >=0.1.0,<0.2.0', 'nr.databind >=0.1.0,<0.2.0', 'pony >=0.7.11,<0.8.0']
+requirements = ['flask >=1.1.1,<1.2.0', 'google-api-python-client >=1.7.11,<1.8.0', 'nr.commons >=0.1.0,<0.2.0', 'nr.databind >=0.1.0,<0.2.0', 'pony >=0.7.11,<0.8.0', 'PyYAML >=5.2,<5.3.0']
 
 setuptools.setup(
   name = 'bbplay-server',
