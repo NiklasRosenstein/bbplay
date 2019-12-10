@@ -1,8 +1,8 @@
 import React, { useContext, useState } from 'react'
 import styled from 'styled-components'
 import { PlaylistContext } from './Playlist'
-import { H3, Icon, Button } from '@blueprintjs/core'
-import { PAUSE, PLAY } from './actions'
+import { Icon, Button } from '@blueprintjs/core'
+import { SET_NEXT_TRACK, SET_PREV_TRACK } from './actions'
 
 const Footer = styled.footer`
     position: fixed;
@@ -54,6 +54,14 @@ export default () => {
             player && player.playVideo()
         }
     }
+
+    const handleNextClick = () => {
+        dispatch({ type: SET_NEXT_TRACK })
+    }
+
+    const handlePrevClick = () => {
+        dispatch({ type: SET_PREV_TRACK })
+    }
     return (
         <Footer>
             {currentTrack && (
@@ -63,13 +71,13 @@ export default () => {
                         <CardTitle>{currentTrack.videoData.snippet.title}</CardTitle>
                     </TitleContainer>
                     <Controls>
-                        <Button>
+                        <Button onClick={handlePrevClick}>
                             <Icon icon='step-backward' />
                         </Button>
                         <Button onClick={handleClick}>
                             <Icon icon={playing ? 'pause' : 'play'} />
                         </Button>
-                        <Button>
+                        <Button onClick={handleNextClick}>
                             <Icon icon='step-forward' />
                         </Button>
                     </Controls>

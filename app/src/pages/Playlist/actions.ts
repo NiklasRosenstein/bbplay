@@ -7,6 +7,8 @@ export const ADD_TRACK = 'playlist/ADD_TRACK'
 export const REMOVE_TRACK = 'playlist/REMOVE_TRACK'
 export const SET_PLAYLIST = 'playlist/SET_PLAYLIST'
 export const SET_NEXT_TRACK = 'playlist/SET_NEXT_TRACK'
+export const SET_PREV_TRACK = 'playlist/SET_PREV_TRACK'
+
 export const SET_CURRENT_TRACK = 'playlist/SET_CURRENT_TRACK'
 export const PLAY = 'playlist/PLAY'
 export const PAUSE = 'playlist/PAUSE'
@@ -35,6 +37,10 @@ export interface SetCurrentTrack {
 export interface SetNextTrack {
     type: typeof SET_NEXT_TRACK
 }
+
+export interface SetPrevTrack {
+    type: typeof SET_PREV_TRACK
+}
 export interface AddTrack {
     type: typeof ADD_TRACK
     payload: {
@@ -62,4 +68,4 @@ export interface SetPlaylist {
     }
 }
 
-export type IPlaylistAction = SetTracks | SetPlaylist | AddTrack | RemoveTrack | SetCurrentTrack | SetNextTrack | SetPlayer | Play | Pause
+export type IPlaylistAction = SetTracks | SetPlaylist | AddTrack | RemoveTrack | SetCurrentTrack | SetNextTrack | SetPlayer | Play | Pause | SetPrevTrack
