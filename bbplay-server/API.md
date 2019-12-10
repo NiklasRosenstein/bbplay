@@ -8,9 +8,14 @@ token in the `Authorization` header (1) or the `bbplay-token` cookie (2).
 (1) Must be of the form `Bearer <TOKEN>`  
 (2) Must be of the form `<TOKEN>`
 
-## auth
+Endpoints that require authorization are marked with a star (`*`) in front
+of the HTTP method.
 
-### GET `/api/v1/auth` (authd)
+# Auth API
+
+## getUserInfo
+
+`*GET /api/v1/auth`
 
 If the token is valid, returns the user's information
 (which is currently only the `username`).
@@ -23,7 +28,9 @@ Example response:
 }
 ```
 
-### POST `/api/v1/auth`
+## getUserToken
+
+`POST /api/v1/auth`
 
 Supply a username and password to generate a new authentication token for
 a user.
@@ -45,13 +52,15 @@ Example response:
 }
 ```
 
-### DELETE `/api/v1/auth` (authd)
+## deleteUserToken
+
+`*DELETE /api/v1/auth`
 
 Revokes the current token.
 
-## playlist
+# Playlist API
 
-### Object: `Playlist`
+## Object: `Playlist`
 
 * `id` (str): The UUID of the playlist.
 * `name` (str): The Playlist name.
@@ -69,7 +78,7 @@ Example Playlist:
 }
 ```
 
-### Object: `Track`
+## Object: `Track`
 
 * `id` (int): The ID of the track.
 * `playlistId` (str): The ID of the playlist that the track belongs to.
@@ -85,13 +94,17 @@ Example Playlist:
 * `submittedByYou` (boolean): Indicates whether the track was submitted by
   the person requesting the resource.
 
-### GET `/api/v1/playlist` (authd)
+## getPlaylists
+
+`*GET /api/v1/playlist`
 
 Returns a list of all playlists.
 
 Return type: `Playlist[]`
 
-### PUT `/api/v1/playlist` (authd)
+## createPlaylist
+
+`*PUT /api/v1/playlist`
 
 Creates a new playlist.
 
@@ -105,23 +118,31 @@ Example request:
 }
 ```
 
-### GET `/api/v1/playlist/<playlist>` (authd)
+## getPlaylist
+
+`GET /api/v1/playlist/<playlist>` (authd)
 
 Return type: `Playlist`
 
-### DELETE `/api/v1/playlist/<playlist>` (authd)
+## deletePlaylist
+
+`*DELETE /api/v1/playlist/<playlist>` (authd)
 
 Deletes the playlist with the specified `<playlist>`.
 
 Return type: `null`
 
-### GET `/api/v1/playlist/<playlist>/tracks`
+## getPlaylistTracks
+
+`GET /api/v1/playlist/<playlist>/tracks`
 
 Returns all tracks in a playlist.
 
 Return type: `Track[]`
 
-### PUT `/api/v1/playlist/<playlist>/tracks`
+## addTrackToPlaylist
+
+`PUT /api/v1/playlist/<playlist>/tracks`
 
 Adds a new track to the playlist. Anonymous users may be limited by the number
 or types of tracks they can submit to a playlist.
@@ -136,16 +157,20 @@ Errors:
 
 *Todo: What kind of error would be returned if the user is not allowed to submit a track?*
 
-### DELETE `/api/v1/playlist/<playlist>/tracks/<track>`
+## deleteTrackFromPlaylist
+
+`DELETE /api/v1/playlist/<playlist>/tracks/<track>`
 
 Deletes a track from the playlist. Authenticated users are allowed to remove
 any track from a playlist, anonymous users can only delete their own tracks.
 
 Return type: `null`
 
-## youtube
+# Youtube API
 
-### GET `/api/v1/youtube/search`
+## search
+
+`GET /api/v1/youtube/search`
 
 Proxies a YouTube video search request.
 
