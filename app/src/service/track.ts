@@ -1,12 +1,14 @@
 
 import { authInstance } from './axiosInstances'
 import { AxiosResponse } from 'axios'
+import { IVideoItem } from './youtube'
 
 
-export interface Track {
+export interface ITrack {
     id: number
     playlistId: string
     videoId: string
+    videoData: IVideoItem
     upvotes: number
     downvotes: number
     submittedTime: string
@@ -17,11 +19,11 @@ export interface Track {
 }
 
 
-export const getMany = (playlistId: string): Promise<AxiosResponse<Track[]>> => authInstance.get(`/playlist/${playlistId}/tracks`)
+export const getMany = (playlistId: string): Promise<AxiosResponse<ITrack[]>> => authInstance.get(`/playlist/${playlistId}/tracks`)
 
-export const remove = (playlistId: string, trackId: number): Promise<AxiosResponse<Track>> => authInstance.delete(`/playlist/${playlistId}/tracks/${trackId}`)
+export const remove = (playlistId: string, trackId: number): Promise<AxiosResponse<ITrack>> => authInstance.delete(`/playlist/${playlistId}/tracks/${trackId}`)
 
-export const add = (playlistId: string, videoId: string): Promise<AxiosResponse<Track>> => authInstance.put(`/playlist/${playlistId}/tracks`, { videoId })
+export const add = (playlistId: string, videoId: string): Promise<AxiosResponse<ITrack>> => authInstance.put(`/playlist/${playlistId}/tracks`, { videoId })
 
 export const vote = (playlistId: string, trackId: number, vote: "up" | "down"): Promise<AxiosResponse<undefined>> => authInstance.post(`/playlist/${playlistId}/tracks/${trackId}/vote`, { vote })
 

@@ -1,25 +1,43 @@
-import { Track } from "../../service/track";
+import { ITrack } from "../../service/track";
 import { Playlist } from "../../service/playlist";
-import { IPlaylistAction, SET_TRACKS, SET_PLAYLIST, ADD_TRACK, REMOVE_TRACK, SET_CURRENT_TRACK, SET_NEXT_TRACK } from "./actions";
+import { IPlaylistAction, PLAY, SET_TRACKS, SET_PLAYLIST, ADD_TRACK, REMOVE_TRACK, SET_CURRENT_TRACK, SET_NEXT_TRACK, SET_PLAYER, PAUSE } from "./actions";
 
 export interface IPlaylistState {
     playlist?: Playlist
-    tracks: Track[]
-    currentTrack?: Track
+    tracks: ITrack[]
+    currentTrack?: ITrack
+    player?: any
+    playing: boolean
 }
 
 export const initialState: IPlaylistState = {
     tracks: [],
+    playing: false
 }
 
 export const reducer = (state: IPlaylistState, action: IPlaylistAction): IPlaylistState => {
     switch (action.type) {
+        case PLAY:
+            return {
+                ...state,
+                playing: true
+            }
+        case PAUSE:
+            return {
+                ...state,
+                playing: false
+            }
         case SET_TRACKS:
             const { tracks } = action.payload
             return {
                 ...state,
                 tracks
             };
+        case SET_PLAYER:
+            const { player } = action.payload
+            return {
+                ...state, player
+            }
         case SET_CURRENT_TRACK:
             const { currentTrack } = action.payload
             return {

@@ -11,6 +11,7 @@ import { reducer, initialState, IPlaylistState } from './reducer'
 import { IPlaylistAction, SET_NEXT_TRACK } from './actions'
 import EmbeddedPlayer from './EmbeddedPlayer'
 import { useMediaQuery } from 'react-responsive'
+import FooterPlayer from './FooterPlayer'
 
 export const PlaylistContext = React.createContext<[IPlaylistState, React.Dispatch<IPlaylistAction>] | undefined>(
     undefined,
@@ -25,6 +26,10 @@ const Container = styled.div`
     width: 100%;
     display: flex;
     flex-direction: column;
+`
+
+const VideoContainer = styled.div`
+    margin: auto;
 `
 
 const PlaylistView = ({ match }: RouteComponentProps<{ id: string }>) => {
@@ -68,7 +73,9 @@ const PlaylistView = ({ match }: RouteComponentProps<{ id: string }>) => {
                     </h1>
                     <InnerContainer>
                         {state.currentTrack && (
-                            <EmbeddedPlayer handleEnd={handlePlayEnd} id={state.currentTrack.videoId} />
+                            <VideoContainer>
+                                <EmbeddedPlayer handleEnd={handlePlayEnd} id={state.currentTrack.videoId} />
+                            </VideoContainer>
                         )}
                         <Tabs selectedTabId={tabId} onChange={handleTabChange}>
                             <Tab id='playlist' title='Playlist' panel={<SongList playlistId={id} />}></Tab>
@@ -77,6 +84,7 @@ const PlaylistView = ({ match }: RouteComponentProps<{ id: string }>) => {
                     </InnerContainer>
                 </Container>
             </PageContainer>
+            <FooterPlayer />
         </PlaylistContext.Provider>
     )
 }

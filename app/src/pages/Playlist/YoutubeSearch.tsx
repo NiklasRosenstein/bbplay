@@ -14,7 +14,6 @@ const Container = styled.div`
 
 export default ({ playlistId }: { playlistId: string }) => {
     const [searchString, setSearchString] = useState('')
-    const [{ currentTrack }] = useContext(PlaylistContext)!
 
     const [videos, setVideos] = useState<IVideoItem[]>([])
     const [loading, setLoading] = useState(false)
@@ -37,7 +36,7 @@ export default ({ playlistId }: { playlistId: string }) => {
     }
 
     return (
-        <Container offset={isMobile && currentTrack !== undefined ? 450 : currentTrack ? 550 : 250}>
+        <Container offset={310}>
             <form onSubmit={handleSubmit}>
                 <InputGroup
                     leftIcon='search'
