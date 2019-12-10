@@ -132,7 +132,7 @@ Deletes the playlist with the specified `<playlist>`.
 
 Return type: `null`
 
-## getPlaylistTracks
+## getTracks
 
 `GET /api/v1/playlist/<playlist>/tracks`
 
@@ -140,7 +140,7 @@ Returns all tracks in a playlist.
 
 Return type: `Track[]`
 
-## addTrackToPlaylist
+## addTrack
 
 `PUT /api/v1/playlist/<playlist>/tracks`
 
@@ -157,14 +157,53 @@ Errors:
 
 *Todo: What kind of error would be returned if the user is not allowed to submit a track?*
 
-## deleteTrackFromPlaylist
+## deleteTrack
 
 `DELETE /api/v1/playlist/<playlist>/tracks/<track>`
 
 Deletes a track from the playlist. Authenticated users are allowed to remove
 any track from a playlist, anonymous users can only delete their own tracks.
 
-Return type: `null`
+Return type: 204 No Content
+
+## voteTrack
+
+`POST /api/v1/playlist/<playlist>/tracks/<track>/vote`
+
+Upvotes or downvotes a track. Users cannot upvote their own track. The same
+user can only upvote or downvote a track, not both at the same time (and
+trying to do so will overwrite their previous vote).
+
+Example request:
+
+```json
+{
+  "vote": "up"
+}
+```
+
+Return type: 204 No Content
+
+## deleteVote
+
+`DELETE /api/v1/playlist/<playlist>/tracks/<track>/vote`
+
+Deletes a user's vote from the track. This is a no-op if the user did not
+place their vote on the track.
+
+Return type: 204 No Content
+
+## vetoTrack
+
+`*POST /api/v1/playlist/<playlist>/tracks/<track>/veto`
+
+Marks a track as veto'ed. This will cause the frontend to ignore the track
+during playback. The UI will display vetoed tracks as such. Vetoed tracks
+do not count towards user's track limit (as if it was already played).
+
+Only registered users can veto tracks.
+
+Return type: 204 No Content
 
 # Youtube API
 

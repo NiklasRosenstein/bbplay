@@ -5,7 +5,7 @@ from bbplay.server.app import app, config
 from bbplay.server.models.playlist import *
 from flask import abort, request
 from nr.databind.core import Field, Struct
-from nr.databind.json import JsonFieldName
+from nr.databind.json import JsonFieldName, JsonValidator
 from pony import orm
 
 
@@ -19,6 +19,16 @@ class DeletePlaylistRequest(Struct):
 
 class PutTrackRequest(Struct):
   video_id = Field(str, JsonFieldName('videoId'))
+
+
+class VoteRequest(Struct):
+  vote = Field(str)
+  is_upvote = property(lambda self: self.vote == 'up')
+
+  @JsonValidator
+  def validate(self):
+    if self.vote not in ('up', 'down'):
+      raise ValueError('invalid value for "vote": {!r}'.format(self.vote))
 
 
 @app.route('/api/v1/playlist', methods=['GET'])
@@ -74,7 +84,7 @@ def api_v1_playlist_tracks_put(playlist: str, req: PutTrackRequest) -> Track:
   if len(user.get_queued_tracks(playlist)) > 1:
     return {'error': 'QueueLimit', 'message': 'Max number of queued tracks.'}, 409
 
-  video_data = config.credentials.create_youtube_client()
+  video_data = config.credentials.create_youtube_client().get_video(req.video_id)
   if video_data is None:
     return {'error': 'InvalidVideoId', 'message': 'Invalid YouTube Video ID.'}, 400
 
@@ -101,3 +111,49 @@ def api_v1_playlist_tracks_delete(playlist: str, track: int) -> None:
   if not token and track.submitted_by != user:
     abort(403)
   track.delete()
+
+
+@app.route('/api/v1/playlist/<playlist>/tracks/<track>/vote', methods=['POST'])
+@orm.db_session()
+@resource()
+def api_v1_playlist_tracks_vote(playlist: str, track: int, req: VoteRequest) -> None:
+  user = AnonymousUser.get_for_request(request)
+  playlist = Playlist[playlist]
+  track = Track[track]
+  if track.playlist != playlist:
+    abort(404)
+  vote = track.votes.select(lambda v: v.by == user).first()
+  if vote is None:
+    vote = Vote(is_upvote=req.is_upvote, by=user, track=track)
+  else:
+    vote.is_upvot = req.is_upvot
+  return None, 204
+
+
+@app.route('/api/v1/playlist/<playlist>/tracks/<track>/vote', methods=['DELETE'])
+@orm.db_session()
+@resource()
+def api_v1_playlist_tracks_vote_delete(playlist: str, track: int) -> None:
+  user = AnonymousUser.get_for_request(request)
+  playlist = Playlist[playlist]
+  track = Track[track]
+  if track.playlist != playlist:
+    abort(404)
+  vote = track.votes.select(lambda v: v.by == user).first()
+  if vote is not None:
+    vote.delete()
+  return None, 204
+
+
+@app.route('/api/v1/playlist/<playlist>/tracks/<track>/veto', methods=['POST'])
+@orm.db_session()
+@resource()
+def api_v1_playlist_tracks_veto(playlist: str, track: int) -> None:
+  user = AnonymousUser.get_for_request(request)
+  playlist = Playlist[playlist]
+  track = Track[track]
+  if track.playlist != playlist:
+    abort(404)
+  if not track.vetoed_at:
+    track.vetoed_at = datetime.utcnow()
+  return None, 204
