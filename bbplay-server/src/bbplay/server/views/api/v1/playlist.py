@@ -79,9 +79,10 @@ def api_v1_playlist_tracks_put(playlist: str, req: PutTrackRequest) -> Track:
   may be limited to how many concurrent un-played tracks they can have in the
   queue at any given time. """
 
+  token = Authentication.extract(request)
   playlist = Playlist[playlist]
   user = AnonymousUser.get_for_request(request)
-  if len(user.get_queued_tracks(playlist)) > 1:
+  if not token and len(user.get_queued_tracks(playlist)) >= 1:
     return {'error': 'QueueLimit', 'message': 'Max number of queued tracks.'}, 409
 
   video_data = config.credentials.create_youtube_client().get_video(req.video_id)
