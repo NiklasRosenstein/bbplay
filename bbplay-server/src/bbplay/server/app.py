@@ -1,16 +1,19 @@
 
 from .config import load_config
 from .config.roles import execute_role_consumers
-from .models import db
-from .models.core import User, Token
 from nr.proxy import Proxy, proxy_set_value
 from pony import orm
 import argparse
 import flask
 import os
+import re
 
 app = flask.Flask(__name__)
 config = Proxy()
+
+
+from .models import db
+from .models.core import User, Token
 
 
 def main():
@@ -19,6 +22,8 @@ def main():
   parser.add_argument('--generate-token', metavar='USERNAME')
   parser.add_argument('--revoke-tokens', metavar='USERNAME')
   parser.add_argument('--revoke-token', metavar='TOKEN')
+  parser.add_argument('--cli', action='store_true')
+  parser.add_argument('--exec', nargs='...')
 
   args = parser.parse_args()
   if not args.service_root:
@@ -51,6 +56,23 @@ def main():
         parser.error('token does not exist or already revoked')
       token.delete()
     return 0
+  elif args.cli or args.exec:
+    import json
+    def dumps(x):
+      print(json.dumps(x))
+    local = {'app': app, 'config': config, 'orm': orm, 'db': db, 'dumps': dumps}
+    if args.cli:
+      import code
+      code.interact(local)
+    else:
+      for item in args.exec:
+        match = re.match('\s*([\w_\d]+)\s*:\s*(.+)', item)
+        if match:
+          key, expr = match.groups()
+          local[key.strip()] = eval(expr, local, local)
+        else:
+          exec(item, local, local)
+    return 0
 
   from bbplay.server import views
 
@@ -71,6 +93,7 @@ def main():
     port=config.server.port)
 
 
+# Legacy, use `python -m bbplay.server` in the future
 if __name__ == '__main__':
   from bbplay.server.app import main
   main()

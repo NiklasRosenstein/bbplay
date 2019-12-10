@@ -23,6 +23,7 @@ class PutTrackRequest(Struct):
 
 @app.route('/api/v1/playlist', methods=['GET'])
 @orm.db_session()
+@resource()
 def api_v1_playlist_get():
   return [x.to_json() for x in Playlist.select()]
 
