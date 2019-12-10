@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Run from the project root. Installs the nr-python-libs in the right order.
+# Preferably set up a virtualenv before that.
+
+pushd vendor/nr-python-libs
+python3 -m pip install -e nr.commons -e nr.metaclass -e nr.collections \
+  -e nr.interface -e nr.stream -e nr.parsing.date -e nr.databind -e nr.proxy
+popd

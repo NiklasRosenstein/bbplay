@@ -48,7 +48,7 @@ def load_config(filename, service_root):
     config['config'],
     config['runtime'],
     plugins=[
-      Vars({'$serviceRoot': service_root}),
+      Vars({'$serviceRoot': os.path.normpath(service_root)}),
       Include(os.path.dirname(filename), yaml.safe_load)
     ]
   )

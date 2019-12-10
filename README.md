@@ -12,15 +12,13 @@ _Todo_
 
 ### bbplay-server
 
+    $ git submodule update --init
     $ python3 -m venv .venv
     $ . .venv/bin/activate
-    $ git clone https://git.niklasrosenstein.com/NiklasRosenstein/nr-python-libs.git
-    $ cd nr-python-libs
-    $ pip install -e nr.commons -e nr.metaclass -e nr.collections -e nr.interface -e nr.stream -e nr.databind -e nr.proxy
-    $ cd ../bbplay-server
-    $ pip install -e .
-    $ echo "youtube-data-api: YOUTUBE_API_TOKEN" > var/conf/credentials.yaml
-    $ python -m bbplay.server.app
+    $ scripts/install-nr-python-libs
+    $ pip install -e bbplay-server
+    $ echo "youtube-data-api: YOUTUBE_API_TOKEN" > bbplay-server/var/conf/credentials.yaml
+    $ python -m bbplay.server.app -R bbplay-server
 
 ### bbplay-app
 
