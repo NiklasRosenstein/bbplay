@@ -39,8 +39,8 @@ def api_v1_playlist_put(token: Authentication, req: CreatePlaylistRequest):
 @app.route('/api/v1/playlist/<playlist>', methods=['GET'])
 @orm.db_session()
 @resource()
-def api_v1_playlist_single_get(id: int):
-  return Playlist[id]
+def api_v1_playlist_single_get(playlist: int):
+  return Playlist[playlist]
 
 
 @app.route('/api/v1/playlist/<playlist>', methods=['DELETE'])
