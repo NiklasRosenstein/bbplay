@@ -74,6 +74,8 @@ Example Playlist:
 * `id` (int): The ID of the track.
 * `playlistId` (str): The ID of the playlist that the track belongs to.
 * `videoId` (str): The YouTube video ID for this track.
+* `videoData` (object): The YouTube video data with the `snippet` and
+  `contentDetails` parts
 * `upvotes` (int): The number of upvotes for this track.
 * `downvotes` (int): The number of downvotes for this track.
 * `submittedTime` (str): The datetime when the track was submitted.
@@ -125,6 +127,12 @@ Adds a new track to the playlist. Anonymous users may be limited by the number
 or types of tracks they can submit to a playlist.
 
 Return type: `Track`
+
+Errors:
+
+* `409`, `error=QueueLimit`: If the user cannot submit any more tracks.
+* `400`, `error=InvalidVideoId`: If the YouTube API does not return a valid
+  response for the supplied `videoId`.
 
 *Todo: What kind of error would be returned if the user is not allowed to submit a track?*
 

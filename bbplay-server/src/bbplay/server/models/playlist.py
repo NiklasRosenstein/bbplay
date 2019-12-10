@@ -24,6 +24,7 @@ class Playlist(db.Entity):
 class Track(db.Entity):
   playlist = orm.Required(Playlist, lazy=True)
   youtube_video_id = orm.Required(str)
+  youtube_video_data = orm.Required(orm.Json)
   submitted_by = orm.Required('AnonymousUser')
   submitted_at = orm.Required(datetime, default=datetime.utcnow)
   played_at = orm.Optional(datetime)
@@ -37,6 +38,7 @@ class Track(db.Entity):
       'id': self.id,
       'playlistId': self.playlist.id,
       'videoId': self.youtube_video_id,
+      'videoData': self.youtube_video_data,
       'upvotes': len(self.votes.select(lambda x: x.is_upvote)),
       'downvotes': len(self.votes.select(lambda x: not x.is_upvote)),
       'submittedTime': self.submitted_at,

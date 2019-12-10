@@ -74,9 +74,14 @@ def api_v1_playlist_tracks_put(playlist: str, req: PutTrackRequest) -> Track:
   if len(user.get_queued_tracks(playlist)) > 1:
     return {'error': 'QueueLimit', 'message': 'Max number of queued tracks.'}, 409
 
+  video_data = config.credentials.create_youtube_client()
+  if video_data is None:
+    return {'error': 'InvalidVideoId', 'message': 'Invalid YouTube Video ID.'}, 400
+
   track = Track(
     playlist=playlist,
     youtube_video_id=req.video_id,
+    youtube_video_data=video_data,
     submitted_by=user
   )
   orm.commit()
