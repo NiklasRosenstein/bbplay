@@ -11,6 +11,17 @@ export interface IThumbnail {
 export interface IVideoItem {
     kind: string,
     etag: string,
+    contentDetails: {
+        caption: boolean,
+        definition: string,
+        dimension: string,
+        duration: string,
+        licensedContent: boolean,
+        projection: string,
+        regionRestriction: {
+            allowed: string[]
+        }
+    }
     id: {
         kind: string,
         videoId: string,

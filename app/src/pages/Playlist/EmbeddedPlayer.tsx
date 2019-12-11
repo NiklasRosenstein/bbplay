@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useContext } from 'react'
 import YouTube, { Options } from 'react-youtube'
 import { useMediaQuery } from 'react-responsive'
 import { PlaylistContext } from './Playlist'
@@ -8,6 +8,7 @@ interface IEmbeddedPlayer {
     id: string
     handleEnd: () => void
 }
+
 export default ({ id, handleEnd }: IEmbeddedPlayer) => {
     const [, dispatch] = useContext(PlaylistContext)!
 
@@ -29,7 +30,9 @@ export default ({ id, handleEnd }: IEmbeddedPlayer) => {
         dispatch({ type: PAUSE })
     }
 
-    const handleReady = (event: { target: any }) => dispatch({ type: SET_PLAYER, payload: { player: event.target } })
+    const handleReady = (event: { target: any }) => {
+        dispatch({ type: SET_PLAYER, payload: { player: event.target } })
+    }
 
     return (
         <YouTube

@@ -7,8 +7,6 @@ import { PlaylistContext } from './Playlist'
 import { SET_TRACKS } from './actions'
 import { DragDropContext, Droppable, Draggable, DropResult, ResponderProvided } from 'react-beautiful-dnd'
 import { ITrack } from '../../service/track'
-import { Redirect } from 'react-router'
-import { useMediaQuery } from 'react-responsive'
 import SongCard from './SongCard'
 
 const Container = styled.div``
@@ -32,10 +30,8 @@ const reorder = (tracks: ITrack[], startIndex: number, endIndex: number) => {
 }
 
 export default ({ playlistId }: { playlistId: string }) => {
-    const [{ tracks, currentTrack }, dispatch] = useContext(PlaylistContext)!
+    const [{ tracks }, dispatch] = useContext(PlaylistContext)!
     const [loading, setLoading] = useState(false)
-    const [redirect, setRedirect] = useState('')
-    const isMobile = useMediaQuery({ maxWidth: 800 })
 
     useEffect(() => {
         setLoading(true)
@@ -56,10 +52,6 @@ export default ({ playlistId }: { playlistId: string }) => {
         }
         const newTracks = reorder(tracks, result.source.index, result.destination.index)
         dispatch({ type: SET_TRACKS, payload: { tracks: newTracks } })
-    }
-
-    if (redirect) {
-        return <Redirect to={redirect} push />
     }
 
     return (

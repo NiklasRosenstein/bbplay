@@ -21,6 +21,14 @@ body,
     background-color: rgb(48, 64, 75);
 }
 
+.bp3-slider-label {
+    display: none !important;
+}
+
+.bp3-slider {
+    height: 16px !important;
+}
+
 .playlist-card .number {
     display: inline-block;
     padding: 0.5em;

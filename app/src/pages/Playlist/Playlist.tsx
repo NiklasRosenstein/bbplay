@@ -10,7 +10,6 @@ import SongList from './SongList'
 import { reducer, initialState, IPlaylistState } from './reducer'
 import { IPlaylistAction, SET_NEXT_TRACK } from './actions'
 import EmbeddedPlayer from './EmbeddedPlayer'
-import { useMediaQuery } from 'react-responsive'
 import FooterPlayer from './FooterPlayer'
 
 export const PlaylistContext = React.createContext<[IPlaylistState, React.Dispatch<IPlaylistAction>] | undefined>(
@@ -34,7 +33,6 @@ const VideoContainer = styled.div`
 
 const PlaylistView = ({ match }: RouteComponentProps<{ id: string }>) => {
     const { id } = match.params
-    const isMobile = useMediaQuery({ maxWidth: 800 })
     const [redirect, setRedirect] = useState('')
     const [playlist, setPlaylist] = useState<Playlist | undefined>(undefined)
     const [state, dispatch] = useReducer(reducer, initialState)
@@ -61,7 +59,6 @@ const PlaylistView = ({ match }: RouteComponentProps<{ id: string }>) => {
 
     const handlePlayEnd = () => {
         dispatch({ type: SET_NEXT_TRACK })
-        console.log('end')
     }
 
     return (

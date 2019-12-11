@@ -1,12 +1,10 @@
-import React, { useState, useContext } from 'react'
+import React, { useState } from 'react'
 import { IVideoItem } from '../../service/youtube'
 import api from '../../service/apiService'
 import { InputGroup, Button, Spinner } from '@blueprintjs/core'
 import { ListContainer } from '../../components/List'
 import styled from 'styled-components'
 import YoutubeCard from './YoutubeCard'
-import { useMediaQuery } from 'react-responsive'
-import { PlaylistContext } from './Playlist'
 
 const Container = styled.div`
     height: ${(props: { offset: number }) => `calc(100vh - ${props.offset}px)`};
@@ -17,7 +15,6 @@ export default ({ playlistId }: { playlistId: string }) => {
 
     const [videos, setVideos] = useState<IVideoItem[]>([])
     const [loading, setLoading] = useState(false)
-    const isMobile = useMediaQuery({ maxWidth: 800 })
 
     const handleChange = (ev: React.ChangeEvent<HTMLInputElement>) => {
         setSearchString(ev.target.value)
