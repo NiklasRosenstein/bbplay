@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { H3, Card, Classes, Button, Icon } from '@blueprintjs/core'
 import { PlaylistContext } from './Playlist'
@@ -7,6 +7,7 @@ import { AppToaster } from '../../components/Toaster'
 import { REMOVE_TRACK, SET_CURRENT_TRACK } from './actions'
 import { ITrack } from '../../service/track'
 import { useMediaQuery } from 'react-responsive'
+import Flex from '../../components/Flex'
 
 const TitleContainer = styled.div`
     display: flex;
@@ -17,6 +18,7 @@ const TitleContainer = styled.div`
 
 const ThumbnailImage = styled.img`
     border-radius: 4px;
+    filter: ${(props: { isActive?: boolean }) => (props.isActive ? 'blur(2px)' : 'unset')};
     width: 60px;
     height: 60px;
     margin-right: 1rem;
@@ -29,9 +31,8 @@ const CardTitle = styled(H3)`
 const CardDescription = styled.span`
     overflow: hidden;
     text-overflow: ellipsis;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 4; /* number of lines to show */
+    white-space: nowrap;
+    width: 100%;
 `
 
 const InnerCardContainer = styled.div`
@@ -46,8 +47,8 @@ const StyledCard = styled(Card)`
     justify-content: space-between;
     align-items: center;
     border: 1px solid
-        ${(props: { isDragging: boolean; isPlaying?: boolean }) =>
-            props.isPlaying ? 'lightgreen' : props.isDragging ? 'lightblue' : '#30404d'};
+        ${(props: { isDragging: boolean; isActive?: boolean }) =>
+            props.isActive ? 'lightgreen' : props.isDragging ? 'lightblue' : '#30404d'};
 `
 
 interface ISongCardProps {
@@ -56,7 +57,7 @@ interface ISongCardProps {
     isDragging: boolean
 }
 export default ({ playlistId, track, isDragging }: ISongCardProps) => {
-    const [{ currentTrack }, dispatch] = useContext(PlaylistContext)!
+    const [{ currentTrack, playing }, dispatch] = useContext(PlaylistContext)!
     const isMobile = useMediaQuery({ maxWidth: 800 })
 
     const handleDeleteClick = (id: number) => async (ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -75,14 +76,14 @@ export default ({ playlistId, track, isDragging }: ISongCardProps) => {
         //setRedirect(`/player/${track.videoId}`)
     }
 
+    const isActive = currentTrack && currentTrack.id === track.id
     return (
-        <StyledCard
-            isPlaying={currentTrack && currentTrack.id === track.id}
-            onClick={handleTrackClick(track)}
-            isDragging={isDragging}
-        >
+        <StyledCard interactive isActive={isActive} onClick={handleTrackClick(track)} isDragging={isDragging}>
             <InnerCardContainer isMobile={isMobile}>
-                <ThumbnailImage src={track.videoData.snippet.thumbnails.default.url} />
+                <div style={{ position: 'relative' }}>
+                    {isActive && <PlayOverlay isPlaying={playing} />}
+                    <ThumbnailImage isActive={isActive} src={track.videoData.snippet.thumbnails.default.url} />
+                </div>
                 <TitleContainer>
                     <CardTitle isMobile={isMobile}>{track.videoData.snippet.title}</CardTitle>
                     <CardDescription className={Classes.UI_TEXT}>{track.videoData.snippet.description}</CardDescription>
@@ -93,5 +94,41 @@ export default ({ playlistId, track, isDragging }: ISongCardProps) => {
                 <Icon icon='trash' />
             </Button>
         </StyledCard>
+    )
+}
+
+const Bar = styled.div`
+    width: 5px;
+    margin: 1px;
+    background: rgba(255, 255, 255, 0.8);
+    transition: height 0.5s ease-in-out;
+    height: ${(props: { heightPercentage: number }) => (props.heightPercentage > 100 ? 100 : props.heightPercentage)}%;
+`
+
+const PlayContainer = styled(Flex)`
+    position: absolute;
+    height: 20px;
+    left: 10px;
+    top: 20px;
+    z-index: 10;
+    width: 40px;
+`
+
+const PlayOverlay = ({ isPlaying }: { isPlaying: boolean }) => {
+    const [percentages, setPercentages] = useState([0, 20, 40, 60])
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const newPercentages = percentages.map(percentage => Math.round(Math.random() * 100))
+            setPercentages(newPercentages)
+        }, 500)
+        return () => clearInterval(interval)
+    }, [])
+    return (
+        <PlayContainer justify='center' align='flex-end'>
+            {percentages.map(percentage => (
+                <Bar heightPercentage={isPlaying ? percentage : 15}></Bar>
+            ))}
+        </PlayContainer>
     )
 }
