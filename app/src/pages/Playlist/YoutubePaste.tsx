@@ -46,7 +46,7 @@ export default ({ playlistId }: { playlistId: string }) => {
                 <InputGroup
                     leftIcon='search'
                     rightElement={<Button icon='arrow-right' type='submit' />}
-                    placeholder='Search YouTube'
+                    placeholder='Paste YouTube Link'
                     value={youtubeLink}
                     onChange={handleChange}
                 />

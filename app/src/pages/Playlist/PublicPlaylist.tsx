@@ -42,7 +42,6 @@ const PublicPlaylist = ({ match }: RouteComponentProps<{ id: string }>) => {
                 <InnerContainer>
                     <Tabs large selectedTabId={tabId} onChange={handleTabChange}>
                         <Tab id='playlist' title='Playlist' panel={<SongList isPublic playlistId={id} />}></Tab>
-                        <Tab id='youtube' title='Search Youtube' panel={<YoutubeSearch playlistId={id} />}></Tab>
                         <Tab
                             id='youtube-paste'
                             title='Paste Youtube Link'
