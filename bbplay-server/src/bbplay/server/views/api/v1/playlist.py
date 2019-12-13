@@ -147,6 +147,7 @@ def api_v1_playlist_tracks_put(playlist: str, req: PutTrackRequest) -> Track:
   token = Authentication.extract(request, None)
   playlist = Playlist[playlist]
   user = AnonymousUser.get_for_request(request)
+  print(user)
   if not token and len(user.get_queued_tracks(playlist)) >= 1:
     return {'error': 'QueueLimit', 'message': 'Max number of queued tracks.'}, 409
 

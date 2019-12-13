@@ -63,9 +63,10 @@ class AnonymousUser(db.Entity):
 
   @classmethod
   def get_for_request(cls, request):
-    ip = request.remote_addr
+    ip = request.headers.get('HTTP_X_FORWARDED_FOR') or request.remote_addr
     browser_id = 'TODO'
-    return cls.get(ip=ip, browser_id=browser_id) or cls(ip=ip, browser_id=browser_id)
+    return cls.get(ip=ip, browser_id=browser_id) \
+      or cls(ip=ip, browser_id=browser_id)
 
   def get_queued_tracks(self, playlist: Playlist):
     return self.tracks.select(lambda x: x.playlist == playlist and (x.played_at is None or x.disqualified))
