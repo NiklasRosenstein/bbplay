@@ -20,7 +20,7 @@ const AuthWrapper = (props: RouteComponentProps<{ id: string }>) => {
         api.playlists.getOne(id).then(({ data }) => {
             dispatch({ type: SET_PLAYLIST, payload: { playlist: data } })
         })
-    }, [id])
+    }, [])
 
     return (
         <PlaylistContext.Provider value={[state, dispatch]}>

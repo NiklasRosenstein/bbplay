@@ -5,6 +5,7 @@ import { Icon, Button, Slider, ButtonGroup } from '@blueprintjs/core'
 import { SET_NEXT_TRACK, SET_PREV_TRACK } from './actions'
 import Flex from '../../components/Flex'
 import { useMediaQuery } from 'react-responsive'
+import api from '../../service/apiService'
 
 const Footer = styled.footer`
     position: fixed;
@@ -81,7 +82,7 @@ const extractTime = (seconds: number) => {
 }
 
 export default () => {
-    const [{ currentTrack, player, playing }, dispatch] = useContext(PlaylistContext)!
+    const [{ currentTrack, player, playing, playlist }, dispatch] = useContext(PlaylistContext)!
     const [currentTime, setCurrentTime] = useState(0)
     const isMobile = useMediaQuery({ maxWidth: 800 })
 

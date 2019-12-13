@@ -29,7 +29,7 @@ const reorder = (tracks: ITrack[], startIndex: number, endIndex: number) => {
 }
 
 export default ({ playlistId, isPublic }: { playlistId: string; isPublic?: boolean }) => {
-    const [{ upNext }, dispatch] = useContext(PlaylistContext)!
+    const [{ upNext, currentTrack }, dispatch] = useContext(PlaylistContext)!
 
     const handleDragEnd = (result: DropResult, provided: ResponderProvided) => {
         if (!result.destination) {
@@ -47,7 +47,7 @@ export default ({ playlistId, isPublic }: { playlistId: string; isPublic?: boole
                 dispatch({ type: SET_CURRENT_TRACK, payload: { currentTrack: data[0] } })
             }
         })
-    }, [dispatch, playlistId])
+    }, [])
 
     useEffect(() => {
         const interval = setInterval(async () => {
@@ -55,7 +55,7 @@ export default ({ playlistId, isPublic }: { playlistId: string; isPublic?: boole
             dispatch({ type: SET_TRACKS, payload: { tracks: data } })
         }, 5000)
         return () => clearInterval(interval)
-    }, [dispatch, playlistId])
+    }, [])
 
     return upNext.length > 0 ? (
         <DragDropContext onDragEnd={handleDragEnd}>
