@@ -69,7 +69,7 @@ interface ISongCardProps {
     isDragging?: boolean
 }
 export default ({ playlistId, track, draggable, isDragging, isPublic }: ISongCardProps) => {
-    const [{ currentTrack, playing, tracks }, dispatch] = useContext(PlaylistContext)!
+    const [{ currentTrack, playing, upNext }, dispatch] = useContext(PlaylistContext)!
     const isMobile = useMediaQuery({ maxWidth: 800 })
 
     const handleDeleteClick = (id: number) => async (ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
@@ -89,9 +89,9 @@ export default ({ playlistId, track, draggable, isDragging, isPublic }: ISongCar
     const handleTrackClick = (nextTrack: ITrack) => () => {
         if (!isPublic) {
             dispatch({ type: SET_CURRENT_TRACK, payload: { currentTrack: nextTrack } })
-            const nextTrackIndex = tracks.findIndex(track => (nextTrack ? track.id === nextTrack.id : false))
-            const before = tracks.filter((_, index) => index < nextTrackIndex)
-            const after = tracks.filter((_, index) => index > nextTrackIndex)
+            const nextTrackIndex = upNext.findIndex(track => (nextTrack ? track.id === nextTrack.id : false))
+            const before = upNext.filter((_, index) => index < nextTrackIndex)
+            const after = upNext.filter((_, index) => index > nextTrackIndex)
             dispatch({ type: SET_UP_NEXT, payload: { upNext: [...after, ...before] } })
         }
         //setRedirect(`/player/${track.videoId}`)

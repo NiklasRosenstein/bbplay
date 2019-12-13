@@ -1,11 +1,10 @@
 import { ITrack, PlayingStatus } from "../../service/track";
 import { IPlaylist } from "../../service/playlist";
-import { IPlaylistAction, PLAY, SET_TRACKS, SET_PLAYLIST, ADD_TRACK, REMOVE_TRACK, SET_CURRENT_TRACK, SET_NEXT_TRACK, SET_PLAYER, PAUSE, SET_PREV_TRACK, SET_UP_NEXT } from "./actions";
+import { IPlaylistAction, PLAY, SET_PLAYLIST, ADD_TRACK, REMOVE_TRACK, SET_CURRENT_TRACK, SET_NEXT_TRACK, SET_PLAYER, PAUSE, SET_PREV_TRACK, SET_UP_NEXT } from "./actions";
 import api from "../../service/apiService";
 
 export interface IPlaylistState {
     playlist?: IPlaylist
-    tracks: ITrack[]
     upNext: ITrack[]
     playedTracks: ITrack[]
     currentTrack?: ITrack
@@ -14,7 +13,6 @@ export interface IPlaylistState {
 }
 
 export const initialState: IPlaylistState = {
-    tracks: [],
     upNext: [],
     playedTracks: [],
     playing: false
@@ -34,18 +32,7 @@ export const reducer = (state: IPlaylistState, action: IPlaylistAction): IPlayli
                 playing: false
             }
         }
-        case SET_TRACKS: {
-            const { tracks } = action.payload
-            const setCurrentTrack = state.currentTrack === undefined && state.tracks.length === 0 && tracks.length > 0
-            if (setCurrentTrack) {
-                api.tracks.putNowPlaying(state.playlist ? state.playlist.id : '', tracks[0] ? tracks[0].id : -1, PlayingStatus.playing)
-            }
-            return {
-                ...state,
-                upNext: tracks,
-                currentTrack: setCurrentTrack ? tracks[0] : state.currentTrack
-            };
-        }
+
         case SET_PLAYER: {
             const { player } = action.payload
             return {
