@@ -61,9 +61,10 @@ export const reducer = (state: IPlaylistState, action: IPlaylistAction): IPlayli
         }
         case SET_UP_NEXT: {
             const { upNext } = action.payload
+
             return {
                 ...state,
-                upNext
+                upNext,
             }
         }
         case SET_PREV_TRACK: {
@@ -89,9 +90,14 @@ export const reducer = (state: IPlaylistState, action: IPlaylistAction): IPlayli
         }
         case ADD_TRACK: {
             const { track } = action.payload
+            const setCurrentTrack = state.currentTrack === undefined && state.upNext.length === 0
+            if (setCurrentTrack) {
+                api.tracks.putNowPlaying(state.playlist ? state.playlist.id : '', track ? track.id : -1, PlayingStatus.playing)
+            }
             return {
                 ...state,
-                upNext: [...state.upNext, track]
+                upNext: [...state.upNext, track],
+                currentTrack: setCurrentTrack ? track : state.currentTrack
             }
         }
         case REMOVE_TRACK: {

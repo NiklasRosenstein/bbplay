@@ -1,7 +1,7 @@
 import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import { PlaylistContext } from './AuthWrapper'
-import { SET_UP_NEXT, SET_TRACKS, SET_CURRENT_TRACK } from './actions'
+import { SET_UP_NEXT, SET_CURRENT_TRACK } from './actions'
 import { DragDropContext, Droppable, Draggable, DropResult, ResponderProvided } from 'react-beautiful-dnd'
 import { ITrack } from '../../service/track'
 import SongCard from './SongCard'
@@ -41,7 +41,7 @@ export default ({ playlistId, isPublic }: { playlistId: string; isPublic?: boole
 
     useEffect(() => {
         api.tracks.getUpNext(playlistId).then(({ data }) => {
-            dispatch({ type: SET_TRACKS, payload: { tracks: data } })
+            dispatch({ type: SET_UP_NEXT, payload: { upNext: data } })
             if (data.length) {
                 api.tracks.putNowPlaying(playlistId, data[0].id, PlayingStatus.playing)
                 dispatch({ type: SET_CURRENT_TRACK, payload: { currentTrack: data[0] } })
@@ -52,7 +52,7 @@ export default ({ playlistId, isPublic }: { playlistId: string; isPublic?: boole
     useEffect(() => {
         const interval = setInterval(async () => {
             const { data } = await api.tracks.getUpNext(playlistId)
-            dispatch({ type: SET_TRACKS, payload: { tracks: data } })
+            dispatch({ type: SET_UP_NEXT, payload: { upNext: data } })
         }, 5000)
         return () => clearInterval(interval)
     }, [])

@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import api from '../../service/apiService'
 import { Spinner } from '@blueprintjs/core'
 import { PlaylistContext } from './AuthWrapper'
-import { SET_TRACKS, SET_CURRENT_TRACK } from './actions'
+import { SET_UP_NEXT, SET_CURRENT_TRACK } from './actions'
 import SongCard from './SongCard'
 
 const Container = styled.div``
@@ -23,7 +23,7 @@ export default ({ playlistId, isPublic }: { playlistId: string; isPublic?: boole
             api.tracks
                 .getUpNext(playlistId)
                 .then(({ data }) => {
-                    dispatch({ type: SET_TRACKS, payload: { tracks: data } })
+                    dispatch({ type: SET_UP_NEXT, payload: { upNext: data } })
                     setLoading(false)
                 })
                 .catch(err => {

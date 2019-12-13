@@ -44,7 +44,7 @@ const InnerCardContainer = styled.div`
     display: flex;
     flex-direction: row;
     align-items: ${(props: { isMobile: boolean }) => (props.isMobile ? 'flex-start' : 'center')};
-    max-width: ${(props: { isMobile: boolean }) => (props.isMobile ? '90%' : 'calc(100% - 150px)')};
+    max-width: ${(props: { isMobile: boolean }) => (props.isMobile ? '80%' : 'calc(100% - 150px)')};
 `
 
 const StyledCard = styled(Card)`
@@ -74,6 +74,7 @@ export default ({ playlistId, track, draggable, isDragging, isPublic }: ISongCar
 
     const handleDeleteClick = (id: number) => async (ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
         ev.preventDefault()
+        ev.stopPropagation()
         if (isPublic) {
             return
         }
@@ -116,7 +117,7 @@ export default ({ playlistId, track, draggable, isDragging, isPublic }: ISongCar
                     <CardDescription className={Classes.UI_TEXT}>{track.videoData.snippet.description}</CardDescription>
                 </TitleContainer>
             </InnerCardContainer>
-            {!isPublic && !draggable && (
+            {!isPublic && (
                 <Button onClick={handleDeleteClick(track.id)}>
                     <Icon icon='trash' />
                 </Button>
