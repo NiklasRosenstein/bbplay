@@ -78,7 +78,7 @@ export const reducer = (state: IPlaylistState, action: IPlaylistAction): IPlayli
 
         case SET_NEXT_TRACK: {
             const nextTrack = state.upNext[0]
-            api.tracks.putNowPlaying(state.playlist ? state.playlist.id : '', nextTrack ? nextTrack.id : state.currentTrack ? state.currentTrack.id : -1, PlayingStatus.stopped)
+            api.tracks.putNowPlaying(state.playlist ? state.playlist.id : '', nextTrack ? nextTrack.id : state.currentTrack ? state.currentTrack.id : -1, nextTrack ? PlayingStatus.playing : PlayingStatus.stopped)
 
             return {
                 ...state,
