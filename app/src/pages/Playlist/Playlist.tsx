@@ -14,6 +14,7 @@ import FooterPlayer from './FooterPlayer'
 import { PlaylistContext } from './AuthWrapper'
 import Flex from '../../components/Flex'
 import UpNext from './UpNext'
+import YoutubePaste from './YoutubePaste'
 
 const InnerContainer = styled.div`
     display: flex;
@@ -108,6 +109,7 @@ const Playlist = ({ match }: RouteComponentProps<{ id: string }>) => {
                         <Tabs large selectedTabId={tabId} onChange={handleTabChange}>
                             <Tab id='upnext' title='Up Next' panel={<UpNext playlistId={id} />}></Tab>
                             <Tab id='youtube' title='Search Youtube' panel={<YoutubeSearch playlistId={id} />}></Tab>
+                            <Tab id='youtube-paste' title='Paste Youtube Link' panel={<YoutubePaste playlistId={id} />}></Tab>
                         </Tabs>
                     </InnerContainer>
                     <Overlay isOpen={isOverlayOpen} onClose={handleOverlayClose}>
