@@ -1,6 +1,6 @@
 import { login, me, logout } from "./auth";
 import { getOne as getOneList, getMany as getManyLists, create as createList, remove as removeList } from "./playlist";
-import { getMany as getManyTracks, add as addTrack, remove as removeTrack, vote, veto, removeVote } from "./track";
+import { getMany as getManyTracks, add as addTrack, remove as removeTrack, vote, veto, removeVote, getUpNext, getNowPlaying, getHistory, putNowPlaying } from "./track";
 
 import { search } from "./youtube";
 
@@ -27,6 +27,10 @@ const api = {
     tracks: {
         getMany: getManyTracks,
         add: addTrack,
+        getUpNext,
+        getHistory,
+        putNowPlaying,
+        getNowPlaying,
         remove: removeTrack,
         vote,
         veto,

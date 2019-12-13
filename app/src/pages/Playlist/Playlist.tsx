@@ -52,7 +52,7 @@ const Playlist = ({ match }: RouteComponentProps<{ id: string }>) => {
     const [isOverlayOpen, setIsOverlayOpen] = useState(false)
     const [state, dispatch] = useContext(PlaylistContext)!
     const [playlist, setPlaylist] = useState<IPlaylist | undefined>(undefined)
-    const [tabId, setTabId] = useState('playlist')
+    const [tabId, setTabId] = useState('upnext')
     useEffect(() => {
         api.playlists
             .getOne(id)
@@ -106,7 +106,6 @@ const Playlist = ({ match }: RouteComponentProps<{ id: string }>) => {
                             </VideoContainer>
                         )}
                         <Tabs large selectedTabId={tabId} onChange={handleTabChange}>
-                            <Tab id='playlist' title='Playlist' panel={<SongList playlistId={id} />}></Tab>
                             <Tab id='upnext' title='Up Next' panel={<UpNext playlistId={id} />}></Tab>
                             <Tab id='youtube' title='Search Youtube' panel={<YoutubeSearch playlistId={id} />}></Tab>
                         </Tabs>

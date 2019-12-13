@@ -18,6 +18,11 @@ export interface ITrack {
     submittedByYou: boolean
 }
 
+export enum PlayingStatus {
+    playing = 'playing',
+    paused = 'paused',
+    stopped = 'stopped'
+}
 
 export const getMany = (playlistId: string): Promise<AxiosResponse<ITrack[]>> => authInstance.get(`/playlist/${playlistId}/tracks`)
 
@@ -30,3 +35,12 @@ export const vote = (playlistId: string, trackId: number, vote: "up" | "down"): 
 export const removeVote = (playlistId: string, trackId: number): Promise<AxiosResponse<undefined>> => authInstance.delete(`/playlist/${playlistId}/tracks/${trackId}/vote`)
 
 export const veto = (playlistId: string, trackId: number): Promise<AxiosResponse<undefined>> => authInstance.post(`/playlist/${playlistId}/tracks/${trackId}/veto`)
+
+export const putNowPlaying = (playlistId: string, trackId: number, status: PlayingStatus): Promise<AxiosResponse<ITrack>> => authInstance.put(`/playlist/${playlistId}/tracks/now-playing`, { trackId, status })
+
+export const getNowPlaying = (playlistId: string, ): Promise<AxiosResponse<ITrack>> => authInstance.get(`/playlist/${playlistId}/tracks/now-playing`)
+
+export const getHistory = (playlistId: string): Promise<AxiosResponse<ITrack[]>> => authInstance.get(`/playlist/${playlistId}/tracks/history`)
+
+export const getUpNext = (playlistId: string): Promise<AxiosResponse<ITrack[]>> => authInstance.get(`/playlist/${playlistId}/tracks/up-next`)
+

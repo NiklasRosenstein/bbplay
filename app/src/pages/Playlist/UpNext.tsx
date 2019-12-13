@@ -1,12 +1,13 @@
-import React, { useContext } from 'react'
-import { ListContainer } from '../../components/List'
+import React, { useContext, useEffect } from 'react'
 import styled from 'styled-components'
 import { PlaylistContext } from './AuthWrapper'
-import { SET_UP_NEXT } from './actions'
+import { SET_UP_NEXT, SET_TRACKS, SET_CURRENT_TRACK } from './actions'
 import { DragDropContext, Droppable, Draggable, DropResult, ResponderProvided } from 'react-beautiful-dnd'
 import { ITrack } from '../../service/track'
 import SongCard from './SongCard'
 import { H6 } from '@blueprintjs/core'
+import api from '../../service/apiService'
+import { PlayingStatus } from '../../service/track'
 
 const Container = styled.div``
 
@@ -37,6 +38,24 @@ export default ({ playlistId, isPublic }: { playlistId: string; isPublic?: boole
         const newTracks = reorder(upNext, result.source.index, result.destination.index)
         dispatch({ type: SET_UP_NEXT, payload: { upNext: newTracks } })
     }
+
+    useEffect(() => {
+        api.tracks.getUpNext(playlistId).then(({ data }) => {
+            dispatch({ type: SET_TRACKS, payload: { tracks: data } })
+            if (data.length) {
+                api.tracks.putNowPlaying(playlistId, data[0].id, PlayingStatus.playing)
+                dispatch({ type: SET_CURRENT_TRACK, payload: { currentTrack: data[0] } })
+            }
+        })
+    }, [])
+
+    useEffect(() => {
+        const interval = setInterval(async () => {
+            const { data } = await api.tracks.getUpNext(playlistId)
+            dispatch({ type: SET_TRACKS, payload: { tracks: data } })
+        }, 5000)
+        return () => clearInterval(interval)
+    }, [])
 
     return upNext.length > 0 ? (
         <DragDropContext onDragEnd={handleDragEnd}>
