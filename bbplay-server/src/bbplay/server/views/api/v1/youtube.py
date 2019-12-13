@@ -45,19 +45,20 @@ def api_v1_youtube_search():
     maxResults=page_size,
     type='video').page
 
-  def _filter_result(result):
-    video_id = result['id']['videoId']
-    if video_id in _video_duration_cache:
-      duration = _video_duration_cache[video_id]
-    else:
-      result = youtube.get_video(video_id)
-      duration = parse_iso8601_duration(result['contentDetails']['duration'])
-      _video_duration_cache[video_id] = duration
-    if duration > 600:
-      return False
-    return True
+  #def _filter_result(result):
+  #  video_id = result['id']['videoId']
+  #  if video_id in _video_duration_cache:
+  #    duration = _video_duration_cache[video_id]
+  #  else:
+  #    result = youtube.get_video(video_id)
+  #    duration = parse_iso8601_duration(result['contentDetails']['duration'])
+  #    _video_duration_cache[video_id] = duration
+  #  if duration > 600:
+  #    return False
+  #  return True
 
   return {
     'nextPageToken': result.next_page_token,
-    'values': [x for x in result.items if _filter_result(x)]
+    #'values': [x for x in result.items if _filter_result(x)]
+    'values': result.items
   }
