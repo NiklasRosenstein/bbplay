@@ -132,11 +132,19 @@ Deletes the playlist with the specified `<playlist>`.
 
 Return type: `null`
 
-## getTracks
+## getUpNext
 
-`GET /api/v1/playlist/<playlist>/tracks`
+`GET /api/v1/playlist/<playlist>/tracks/up-next`
 
-Returns all tracks in a playlist.
+Returns all tracks that haven't been played, sorted by `submittedTime`.
+
+Return type: `Track[]`
+
+## getHistory
+
+`GET /api/v1/playlist/<playlist>/tracks/history`
+
+Returns all tracks that have been played, sorted by `playedTime`.
 
 Return type: `Track[]`
 

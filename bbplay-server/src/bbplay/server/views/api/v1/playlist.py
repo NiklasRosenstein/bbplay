@@ -3,10 +3,12 @@ from ..base import Authentication
 from bbplay.framework.rest import resource
 from bbplay.server.app import app, config
 from bbplay.server.models.playlist import *
+from datetime import datetime
 from flask import abort, request
 from nr.databind.core import Field, Struct
 from nr.databind.json import JsonFieldName, JsonValidator
 from pony import orm
+from typing import Optional
 
 
 class CreatePlaylistRequest(Struct):
@@ -29,6 +31,20 @@ class VoteRequest(Struct):
   def validate(self):
     if self.vote not in ('up', 'down'):
       raise ValueError('invalid value for "vote": {!r}'.format(self.vote))
+
+
+class SetNowPlayingRequest(Struct):
+  track_id = Field(int, JsonFieldName('trackId'))
+  status = Field(str)
+
+  PLAYING = 'playing'
+  PAUSED = 'paused'
+  STOPPED = 'stopped'
+
+  @JsonValidator
+  def validate(self):
+    if self.status not in (self.PLAYING, self.PAUSED, self.STOPPED):
+      raise ValueError('invalid status: {!r}'.format(self.status))
 
 
 @app.route('/api/v1/playlist', methods=['GET'])
@@ -62,12 +78,52 @@ def api_v1_playlist_delete(token: Authentication, playlist: str):
   return None, 204
 
 
-@app.route('/api/v1/playlist/<playlist>/tracks', methods=['GET'])
+@app.route('/api/v1/playlist/<playlist>/tracks/up-next', methods=['GET'])
 @orm.db_session()
 @resource()
-def api_v1_playlist_tracks_get(playlist: str) -> 'List[Track]':
+def api_v1_playlist_tracks_up_next(playlist: str) -> 'List[Track]':
   user = AnonymousUser.get_for_request(request)
-  return [x.to_json(user) for x in Playlist[playlist].tracks.select()]
+  tracks = Playlist[playlist].tracks.select(lambda x: not x.played_at).order_by(Track.submitted_at)
+  return [x.to_json(user) for x in tracks]
+
+
+@app.route('/api/v1/playlist/<playlist>/tracks/history', methods=['GET'])
+@orm.db_session()
+@resource()
+def api_v1_playlist_tracks_history(playlist: str) -> 'List[Track]':
+  user = AnonymousUser.get_for_request(request)
+  tracks = Playlist[playlist].tracks.select(lambda x: x.played_at).order_by(orm.desc(Track.played_at))
+  return [x.to_json(user) for x in tracks]
+
+
+@app.route('/api/v1/playlist/<playlist>/tracks/now-playing', methods=['PUT'])
+@orm.db_session()
+@resource()
+def api_v1_playlist_tracks_now_playing(playlist: str, token: Authentication, req: SetNowPlayingRequest) -> None:
+  if req.status == req.PAUSED:
+    abort(501)
+  playlist = Playlist[playlist]
+  track = Track[req.track_id]
+  if req.status == req.STOPPED:
+    if track != playlist.current_track:
+      abort(400, 'This is not the current track. Did not stop the track.')
+    playlist.current_track = None
+    track.playing_in = None
+  else:
+    track.played_at = datetime.utcnow()
+    playlist.current_track = track
+  return None, 204
+
+
+@app.route('/api/v1/playlist/<playlist>/tracks/now-playing', methods=['GET'])
+@orm.db_session()
+@resource()
+def api_v1_playlist_tracks_get_now_playing(playlist: str) -> Optional[Track]:
+  playlist = Playlist[playlist]
+  track = playlist.current_track
+  if not track:
+    return None, 204
+  return track.to_json(AnonymousUser.get_for_request(request))
 
 
 @app.route('/api/v1/playlist/<playlist>/tracks', methods=['PUT'])

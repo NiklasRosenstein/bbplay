@@ -11,18 +11,22 @@ class Playlist(db.Entity):
   id = orm.PrimaryKey(str, default=lambda: str(uuid.uuid4()))
   name = orm.Required(str)
   date_created = orm.Required(datetime, default=datetime.utcnow)
-  tracks = orm.Set('Track')
+  tracks = orm.Set('Track', reverse='playlist')
+  current_track = orm.Optional('Track', reverse='playing_in')
 
   def to_json(self):
     return {
       'id': self.id,
       'name': self.name,
       'numTracks': len(self.tracks),
-      'htmlUrl': config.get_frontend_url() + '/app/playlist/' + self.id}
+      'htmlUrl': config.get_frontend_url() + '/app/playlist/' + self.id,
+      'currentTrackId': self.current_track.id if self.current_track else None
+    }
 
 
 class Track(db.Entity):
   playlist = orm.Required(Playlist, lazy=True)
+  playing_in = orm.Optional(Playlist, lazy=True)
   youtube_video_id = orm.Required(str)
   youtube_video_data = orm.Required(orm.Json)
   submitted_by = orm.Required('AnonymousUser')

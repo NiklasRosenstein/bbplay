@@ -15,6 +15,7 @@ def request(method, url, *args, auth=True, **kwargs):
     kwargs.setdefault('headers', {})['Authorization'] = None
   request = session.request(method, BASE_URL + url, *args, **kwargs)
   try:
+    request.raise_for_status()
     if request.status_code == 204:
       data = None
     else:
@@ -42,3 +43,9 @@ request('PUT', '/api/v1/playlist/' + playlist['id'] + '/tracks', auth=False, jso
 track = request('PUT', '/api/v1/playlist/' + playlist['id'] + '/tracks', json={'videoId': 'HSsqzzuGTPo'})
 vote = request('POST', '/api/v1/playlist/' + playlist['id'] + '/tracks/' + str(track['id']) + '/vote', json={'vote': 'up'})
 assert request('DELETE', '/api/v1/playlist/' + playlist['id'] + '/tracks/' + str(track['id']) + '/vote', json={'vote': 'up'}) is None
+
+now_playing = '/api/v1/playlist/' + playlist['id'] + '/tracks/now-playing'
+request('PUT', now_playing, json={'trackId': track['id'], 'status': 'playing'})
+assert request('GET', now_playing)['id'] == track['id']
+request('PUT', now_playing, json={'trackId': track['id'], 'status': 'stopped'})
+assert request('GET', now_playing) == None
