@@ -32,7 +32,7 @@ def main():
   filename = os.path.join(args.service_root, 'var', 'conf', 'runtime.yaml')
   proxy_set_value(config, load_config(filename, args.service_root))
 
-  database = config.server.database.copy()
+  database = config.database.copy()
   if 'filename' in database:
     database['filename'] = os.path.abspath(database['filename'])
   db.bind(**database)

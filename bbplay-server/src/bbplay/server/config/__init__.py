@@ -18,11 +18,17 @@ class CredentialsConfig(Struct):
 
 class ServerConfig(Struct):
   debug = Field(bool, default=False)
-  database = Field(dict)
   host = Field(str, default='localhost')
   port = Field(int, default=5000)
+
+
+class RuntimeConfig(Struct):
+  credentials = Field(CredentialsConfig)
+  database = Field(dict)
   external_url = Field(str, default=None)
   frontend_url = Field(str, default=None)
+  produces = Field([dict])
+  server = Field(ServerConfig)
 
   def get_external_url(self):
     if self.external_url is None:
@@ -33,12 +39,6 @@ class ServerConfig(Struct):
     if self.frontend_url is None:
       return self.get_external_url()
     return self.frontend_url
-
-
-class RuntimeConfig(Struct):
-  credentials = Field(CredentialsConfig)
-  server = Field(ServerConfig)
-  produces = Field([dict])
 
 
 def load_config(filename, service_root):

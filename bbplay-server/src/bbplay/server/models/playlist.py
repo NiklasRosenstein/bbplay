@@ -18,7 +18,7 @@ class Playlist(db.Entity):
       'id': self.id,
       'name': self.name,
       'numTracks': len(self.tracks),
-      'htmlUrl': config.server.get_frontend_url() + '/app/playlist/' + self.id}
+      'htmlUrl': config.get_frontend_url() + '/app/playlist/' + self.id}
 
 
 class Track(db.Entity):

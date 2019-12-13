@@ -1,0 +1,18 @@
+version: '3.4'
+services:
+  bbplay-app:
+    build: app
+  bbplay-server:
+    build: bbplay-server
+    volumes:
+      - ./bbplay-server/var/conf:/opt/app/var/conf
+      - ./bbplay-server/var/data:/opt/app/var/data
+  frontdoor:
+    image: nginx
+    volumes:
+      - ./nginx-conf:/etc/nginx/conf.d
+    ports:
+      - '5000:80'
+    links:
+      - 'bbplay-app:bbplay-app'
+      - 'bbplay-server:bbplay-server'

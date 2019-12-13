@@ -1,0 +1,3 @@
+var/conf/credentials.yaml
+var/data/*
+!var/data/.gitkeep
