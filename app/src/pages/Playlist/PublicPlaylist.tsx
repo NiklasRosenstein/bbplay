@@ -7,6 +7,7 @@ import styled from 'styled-components'
 import PageContainer from '../../components/PageContainer'
 import YoutubeSearch from './YoutubeSearch'
 import SongList from './SongList'
+import YoutubePaste from './YoutubePaste'
 
 const InnerContainer = styled.div`
     display: flex;
@@ -42,6 +43,11 @@ const PublicPlaylist = ({ match }: RouteComponentProps<{ id: string }>) => {
                     <Tabs large selectedTabId={tabId} onChange={handleTabChange}>
                         <Tab id='playlist' title='Playlist' panel={<SongList isPublic playlistId={id} />}></Tab>
                         <Tab id='youtube' title='Search Youtube' panel={<YoutubeSearch playlistId={id} />}></Tab>
+                        <Tab
+                            id='youtube-paste'
+                            title='Paste Youtube Link'
+                            panel={<YoutubePaste playlistId={id} />}
+                        ></Tab>
                     </Tabs>
                 </InnerContainer>
             </Container>

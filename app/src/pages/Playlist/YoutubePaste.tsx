@@ -1,14 +1,10 @@
 import React, { useState, useContext } from 'react'
-import { IVideoItem } from '../../service/youtube'
 import api from '../../service/apiService'
-import { InputGroup, Button, Spinner } from '@blueprintjs/core'
-import { ListContainer } from '../../components/List'
+import { InputGroup, Button } from '@blueprintjs/core'
 import styled from 'styled-components'
-import YoutubeCard from './YoutubeCard'
 import { PlaylistContext } from './AuthWrapper'
 import { AppToaster } from '../../components/Toaster'
 import { ADD_TRACK } from './actions'
-import { parse } from 'query-string'
 
 const Container = styled.div`
     height: ${(props: { offset: number }) => `calc(100vh - ${props.offset}px)`};
