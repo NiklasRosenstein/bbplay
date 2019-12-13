@@ -1,7 +1,7 @@
 
 from . import db
 from .core import User
-from ..app import config
+from ..app import app, config
 from datetime import datetime
 from pony import orm
 import uuid
@@ -63,7 +63,17 @@ class AnonymousUser(db.Entity):
 
   @classmethod
   def get_for_request(cls, request):
-    ip = request.headers.get('HTTP_X_FORWARDED_FOR') or request.headers.get('X-Forwarded-For') or request.remote_addr
+    ip = request.headers.get('HTTP_X_FORWARDED_FOR')
+    if ip:
+      app.logger.info('HTTP_X_FORWARDED_FOR: {}'.format(ip))
+    else:
+      ip = request.headers.get('X-Forwarded-For')
+      if ip:
+        app.logger.info('X-Forwarded-For: {}'.format(ip))
+      else:
+        ip = request.remote_addr
+        app.logger.info('remote_addr: {}'.format(ip))
+
     browser_id = 'TODO'
     return cls.get(ip=ip, browser_id=browser_id) \
       or cls(ip=ip, browser_id=browser_id)
