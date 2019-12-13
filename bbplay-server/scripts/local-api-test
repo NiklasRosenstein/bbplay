@@ -9,7 +9,10 @@ BASE_URL = 'http://localhost:5000'
 
 session = requests.Session()
 
-def request(method, url, *args, **kwargs):
+def request(method, url, *args, auth=True, **kwargs):
+  print()
+  if not auth:
+    kwargs.setdefault('headers', {})['Authorization'] = None
   request = session.request(method, BASE_URL + url, *args, **kwargs)
   try:
     if request.status_code == 204:
@@ -32,6 +35,10 @@ token = request('POST', '/api/v1/auth', json={'username': 'admin', 'password': '
 session.headers['Authorization'] = 'Bearer ' + token
 
 playlist = request('PUT', '/api/v1/playlist', json={'name': 'Bushbash in the mix'})
+
+# Try to put a track without auth header.
+request('PUT', '/api/v1/playlist/' + playlist['id'] + '/tracks', auth=False, json={'videoId': 'HSsqzzuGTPo'})
+
 track = request('PUT', '/api/v1/playlist/' + playlist['id'] + '/tracks', json={'videoId': 'HSsqzzuGTPo'})
 vote = request('POST', '/api/v1/playlist/' + playlist['id'] + '/tracks/' + str(track['id']) + '/vote', json={'vote': 'up'})
 assert request('DELETE', '/api/v1/playlist/' + playlist['id'] + '/tracks/' + str(track['id']) + '/vote', json={'vote': 'up'}) is None

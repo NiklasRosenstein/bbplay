@@ -79,7 +79,7 @@ def api_v1_playlist_tracks_put(playlist: str, req: PutTrackRequest) -> Track:
   may be limited to how many concurrent un-played tracks they can have in the
   queue at any given time. """
 
-  token = Authentication.extract(request)
+  token = Authentication.extract(request, None)
   playlist = Playlist[playlist]
   user = AnonymousUser.get_for_request(request)
   if not token and len(user.get_queued_tracks(playlist)) >= 1:
@@ -103,7 +103,7 @@ def api_v1_playlist_tracks_put(playlist: str, req: PutTrackRequest) -> Track:
 @orm.db_session()
 @resource()
 def api_v1_playlist_tracks_delete(playlist: str, track: int) -> None:
-  token = Authentication.extract(request)
+  token = Authentication.extract(request, None)
   user = AnonymousUser.get_for_request(request)
   playlist = Playlist[playlist]
   track = Track[track]

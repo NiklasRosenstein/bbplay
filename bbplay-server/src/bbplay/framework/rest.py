@@ -1,5 +1,6 @@
 
 from flask import abort, make_response, request, Response
+from nr.commons.notset import NotSet
 from nr.databind.core import Struct, ObjectMapper, SerializationValueError
 from nr.databind.json import JsonModule, JsonEncoder
 from werkzeug.exceptions import HTTPException
@@ -56,20 +57,20 @@ class AuthenticationParam(Param):
     self._cookie = cookie
     self._resolve = resolve
 
-  def extract(self, request: 'flask.Request') -> 'Any':
+  def extract(self, request: 'flask.Request', default=NotSet) -> 'Any':
     if self._header and self._header in request.headers:
       value = request.headers[self._header]
       if not value.startswith('Bearer '):
-        abort(403)
+        return abort(403) if default is NotSet else default
       value = value[7:]
     elif self._cookie and self._cookie in request.cookies:
       value = request.cookies
     else:
-      abort(403)
+      return abort(403) if default is NotSet else default
     if self._resolve:
       value = self._resolve(value)
       if value is None:
-        abort(403)
+        return abort(403) if default is NotSet else default
     return value
 
 
