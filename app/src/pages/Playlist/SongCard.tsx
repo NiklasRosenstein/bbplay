@@ -1,10 +1,10 @@
 import React, { useContext, useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { H3, Card, Classes, Button, Icon } from '@blueprintjs/core'
-import { PlaylistContext } from './Playlist'
+import { PlaylistContext } from './AuthWrapper'
 import api from '../../service/apiService'
 import { AppToaster } from '../../components/Toaster'
-import { REMOVE_TRACK, SET_CURRENT_TRACK } from './actions'
+import { REMOVE_TRACK, SET_CURRENT_TRACK, SET_UP_NEXT } from './actions'
 import { ITrack } from '../../service/track'
 import { useMediaQuery } from 'react-responsive'
 import Flex from '../../components/Flex'
@@ -25,7 +25,12 @@ const ThumbnailImage = styled.img`
 `
 
 const CardTitle = styled(H3)`
-    font-size: ${(props: { isMobile: boolean }) => (props.isMobile ? 20 : 30)}px;
+    font-size: ${(props: { isMobile: boolean }) => (props.isMobile ? 16 : 22)}px !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
 `
 
 const CardDescription = styled.span`
@@ -39,7 +44,7 @@ const InnerCardContainer = styled.div`
     display: flex;
     flex-direction: row;
     align-items: ${(props: { isMobile: boolean }) => (props.isMobile ? 'flex-start' : 'center')};
-    max-width: ${(props: { isMobile: boolean }) => (props.isMobile ? '100%' : 'calc(100% - 150px)')};
+    max-width: ${(props: { isMobile: boolean }) => (props.isMobile ? '90%' : 'calc(100% - 150px)')};
 `
 
 const StyledCard = styled(Card)`
@@ -51,17 +56,27 @@ const StyledCard = styled(Card)`
             props.isActive ? 'lightgreen' : props.isDragging ? 'lightblue' : '#30404d'};
 `
 
+const DragIcon = styled(Icon)`
+    margin-right: 2rem;
+    cursor: grab;
+`
+
 interface ISongCardProps {
     playlistId: string
     track: ITrack
-    isDragging: boolean
+    isPublic?: boolean
+    draggable?: boolean
+    isDragging?: boolean
 }
-export default ({ playlistId, track, isDragging }: ISongCardProps) => {
-    const [{ currentTrack, playing }, dispatch] = useContext(PlaylistContext)!
+export default ({ playlistId, track, draggable, isDragging, isPublic }: ISongCardProps) => {
+    const [{ currentTrack, playing, tracks }, dispatch] = useContext(PlaylistContext)!
     const isMobile = useMediaQuery({ maxWidth: 800 })
 
     const handleDeleteClick = (id: number) => async (ev: React.MouseEvent<HTMLElement, MouseEvent>) => {
         ev.preventDefault()
+        if (isPublic) {
+            return
+        }
         try {
             await api.tracks.remove(playlistId, id)
             AppToaster.show({ message: 'Track successfully removed.', intent: 'success' })
@@ -71,14 +86,26 @@ export default ({ playlistId, track, isDragging }: ISongCardProps) => {
         }
     }
 
-    const handleTrackClick = (track: ITrack) => () => {
-        dispatch({ type: SET_CURRENT_TRACK, payload: { currentTrack: track } })
+    const handleTrackClick = (nextTrack: ITrack) => () => {
+        if (!isPublic) {
+            dispatch({ type: SET_CURRENT_TRACK, payload: { currentTrack: nextTrack } })
+            const nextTrackIndex = tracks.findIndex(track => (nextTrack ? track.id === nextTrack.id : false))
+            const before = tracks.filter((_, index) => index < nextTrackIndex)
+            const after = tracks.filter((_, index) => index > nextTrackIndex)
+            dispatch({ type: SET_UP_NEXT, payload: { upNext: [...after, ...before] } })
+        }
         //setRedirect(`/player/${track.videoId}`)
     }
 
     const isActive = currentTrack && currentTrack.id === track.id
     return (
-        <StyledCard interactive isActive={isActive} onClick={handleTrackClick(track)} isDragging={isDragging}>
+        <StyledCard
+            interactive={!isPublic}
+            isActive={isActive}
+            onClick={handleTrackClick(track)}
+            isDragging={isDragging || false}
+        >
+            {draggable && <DragIcon icon='drag-handle-horizontal' />}
             <InnerCardContainer isMobile={isMobile}>
                 <div style={{ position: 'relative' }}>
                     {isActive && <PlayOverlay isPlaying={playing} />}
@@ -89,10 +116,11 @@ export default ({ playlistId, track, isDragging }: ISongCardProps) => {
                     <CardDescription className={Classes.UI_TEXT}>{track.videoData.snippet.description}</CardDescription>
                 </TitleContainer>
             </InnerCardContainer>
-
-            <Button onClick={handleDeleteClick(track.id)}>
-                <Icon icon='trash' />
-            </Button>
+            {!isPublic && !draggable && (
+                <Button onClick={handleDeleteClick(track.id)}>
+                    <Icon icon='trash' />
+                </Button>
+            )}
         </StyledCard>
     )
 }
@@ -123,6 +151,7 @@ const PlayOverlay = ({ isPlaying }: { isPlaying: boolean }) => {
             setPercentages(newPercentages)
         }, 500)
         return () => clearInterval(interval)
+        //eslint-disable-next-line
     }, [])
     return (
         <PlayContainer justify='center' align='flex-end'>

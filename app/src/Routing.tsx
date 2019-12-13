@@ -9,9 +9,9 @@ import '@blueprintjs/icons/lib/css/blueprint-icons.css'
 
 import { BrowserRouter, Route, Redirect, Switch, RouteProps } from 'react-router-dom'
 import { AuthContext } from './App'
-import PlaylistView from './pages/Playlist/Playlist'
 import styled from 'styled-components'
 import Player from './pages/Player/Player'
+import AuthWrapper from './pages/Playlist/AuthWrapper'
 
 const AppContainer = styled.div`
     width: 100vw;
@@ -19,7 +19,6 @@ const AppContainer = styled.div`
 `
 
 interface IAuthRouteProps extends RouteProps {
-    isAuthenticated: boolean
     redirectPath: string
 }
 const AuthRoute = ({ redirectPath, ...props }: IAuthRouteProps) => {
@@ -28,10 +27,9 @@ const AuthRoute = ({ redirectPath, ...props }: IAuthRouteProps) => {
 }
 
 interface INoAuthRouteProps extends RouteProps {
-    isUnauthorized: boolean
     redirectPath: string
 }
-const NoAuthRoute = ({ isUnauthorized, redirectPath, ...props }: INoAuthRouteProps) => {
+const NoAuthRoute = ({ redirectPath, ...props }: INoAuthRouteProps) => {
     const [isAuthenticated] = useContext(AuthContext)!
     return !isAuthenticated ? <Route {...props} /> : <Redirect to={redirectPath} />
 }
@@ -42,10 +40,10 @@ const Routing = () => {
             <Navbar />
             <AppContainer>
                 <Switch>
-                    <AuthRoute isAuthenticated redirectPath='/login' path='/' exact component={PlaylistsOverview} />
-                    <NoAuthRoute isUnauthorized path='/login' redirectPath='/' component={LoginView} />
-                    <AuthRoute path='/playlist/:id' isAuthenticated redirectPath='/login' component={PlaylistView} />
-                    <AuthRoute path='/player/:id' isAuthenticated redirectPath='/login' component={Player} />
+                    <AuthRoute redirectPath='/login' path='/' exact component={PlaylistsOverview} />
+                    <NoAuthRoute path='/login' redirectPath='/' component={LoginView} />
+                    <Route path='/playlist/:id' redirectPath='/login' component={AuthWrapper} />
+                    <AuthRoute path='/player/:id' redirectPath='/login' component={Player} />
                     <Route render={() => <div>No match</div>} />
                 </Switch>
             </AppContainer>

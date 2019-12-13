@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import styled from 'styled-components'
-import { PlaylistContext } from './Playlist'
+import { PlaylistContext } from './AuthWrapper'
 import { Icon, Button, Slider, ButtonGroup } from '@blueprintjs/core'
 import { SET_NEXT_TRACK, SET_PREV_TRACK } from './actions'
 import Flex from '../../components/Flex'

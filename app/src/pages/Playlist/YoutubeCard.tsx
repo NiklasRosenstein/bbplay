@@ -6,7 +6,7 @@ import { AppToaster } from '../../components/Toaster'
 import api from '../../service/apiService'
 import { useMediaQuery } from 'react-responsive'
 import { ListCard } from '../../components/List'
-import { PlaylistContext } from './Playlist'
+import { PlaylistContext } from './AuthWrapper'
 import { ADD_TRACK } from './actions'
 
 const ThumbnailImage = styled.img`

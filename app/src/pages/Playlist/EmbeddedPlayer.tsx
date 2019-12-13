@@ -1,7 +1,7 @@
 import React, { useContext } from 'react'
 import YouTube, { Options } from 'react-youtube'
 import { useMediaQuery } from 'react-responsive'
-import { PlaylistContext } from './Playlist'
+import { PlaylistContext } from './AuthWrapper'
 import { SET_PLAYER, PLAY, PAUSE } from './actions'
 
 interface IEmbeddedPlayer {

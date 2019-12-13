@@ -1,5 +1,5 @@
 import { ITrack } from "../../service/track"
-import { Playlist } from "../../service/playlist"
+import { IPlaylist } from "../../service/playlist"
 
 export const SET_TRACKS = 'playlist/SET_TRACKS'
 export const SET_PLAYER = 'playlist/SET_PLAYER'
@@ -8,7 +8,7 @@ export const REMOVE_TRACK = 'playlist/REMOVE_TRACK'
 export const SET_PLAYLIST = 'playlist/SET_PLAYLIST'
 export const SET_NEXT_TRACK = 'playlist/SET_NEXT_TRACK'
 export const SET_PREV_TRACK = 'playlist/SET_PREV_TRACK'
-
+export const SET_UP_NEXT = 'playlist/SET_UP_NEXT'
 export const SET_CURRENT_TRACK = 'playlist/SET_CURRENT_TRACK'
 export const PLAY = 'playlist/PLAY'
 export const PAUSE = 'playlist/PAUSE'
@@ -31,6 +31,13 @@ export interface SetCurrentTrack {
     type: typeof SET_CURRENT_TRACK
     payload: {
         currentTrack: ITrack
+    }
+}
+
+export interface SetUpNext {
+    type: typeof SET_UP_NEXT
+    payload: {
+        upNext: ITrack[]
     }
 }
 
@@ -64,8 +71,8 @@ export interface SetTracks {
 export interface SetPlaylist {
     type: typeof SET_PLAYLIST
     payload: {
-        playlist: Playlist
+        playlist: IPlaylist
     }
 }
 
-export type IPlaylistAction = SetTracks | SetPlaylist | AddTrack | RemoveTrack | SetCurrentTrack | SetNextTrack | SetPlayer | Play | Pause | SetPrevTrack
+export type IPlaylistAction = SetTracks | SetPlaylist | AddTrack | RemoveTrack | SetCurrentTrack | SetNextTrack | SetPlayer | Play | Pause | SetPrevTrack | SetUpNext

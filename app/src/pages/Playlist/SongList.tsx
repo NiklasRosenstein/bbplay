@@ -3,33 +3,17 @@ import { ListContainer } from '../../components/List'
 import styled from 'styled-components'
 import api from '../../service/apiService'
 import { Spinner } from '@blueprintjs/core'
-import { PlaylistContext } from './Playlist'
+import { PlaylistContext } from './AuthWrapper'
 import { SET_TRACKS } from './actions'
-import { DragDropContext, Droppable, Draggable, DropResult, ResponderProvided } from 'react-beautiful-dnd'
-import { ITrack } from '../../service/track'
 import SongCard from './SongCard'
 
 const Container = styled.div``
 
-const DroppableContainer = styled.div`
-    height: 100%;
-    border-radius: 4px;
-    border: ${(props: { isDraggingOver: boolean }) =>
-        props.isDraggingOver ? '2px dashed lightgreen' : '2px dashed lightgrey'} !important;
-`
-const DraggableContainer = styled.div`
+const SongCardContainer = styled.div`
     margin: 1rem;
 `
 
-const reorder = (tracks: ITrack[], startIndex: number, endIndex: number) => {
-    const result = Array.from(tracks)
-    const [removed] = result.splice(startIndex, 1)
-    result.splice(endIndex, 0, removed)
-
-    return result
-}
-
-export default ({ playlistId }: { playlistId: string }) => {
+export default ({ playlistId, isPublic }: { playlistId: string; isPublic?: boolean }) => {
     const [{ tracks }, dispatch] = useContext(PlaylistContext)!
     const [loading, setLoading] = useState(false)
 
@@ -46,51 +30,19 @@ export default ({ playlistId }: { playlistId: string }) => {
             })
     }, [dispatch, playlistId])
 
-    const handleDragEnd = (result: DropResult, provided: ResponderProvided) => {
-        if (!result.destination) {
-            return
-        }
-        const newTracks = reorder(tracks, result.source.index, result.destination.index)
-        dispatch({ type: SET_TRACKS, payload: { tracks: newTracks } })
-    }
-
     return (
-        <DragDropContext onDragEnd={handleDragEnd}>
-            <Container>
-                <Droppable droppableId='droppable'>
-                    {(provided, snapshot) => (
-                        <DroppableContainer
-                            isDraggingOver={snapshot.isDraggingOver}
-                            {...provided.droppableProps}
-                            ref={provided.innerRef}
-                        >
-                            <ListContainer>
-                                {loading ? (
-                                    <Spinner size={Spinner.SIZE_SMALL} />
-                                ) : (
-                                    tracks.map((track, index) => (
-                                        <Draggable key={track.id} draggableId={track.id.toString()} index={index}>
-                                            {(provided, snapshot) => (
-                                                <DraggableContainer
-                                                    ref={provided.innerRef}
-                                                    {...provided.draggableProps}
-                                                    {...provided.dragHandleProps}
-                                                >
-                                                    <SongCard
-                                                        track={track}
-                                                        playlistId={playlistId}
-                                                        isDragging={snapshot.isDragging}
-                                                    />
-                                                </DraggableContainer>
-                                            )}
-                                        </Draggable>
-                                    ))
-                                )}
-                            </ListContainer>
-                        </DroppableContainer>
-                    )}
-                </Droppable>
-            </Container>
-        </DragDropContext>
+        <Container>
+            <ListContainer>
+                {loading ? (
+                    <Spinner size={Spinner.SIZE_SMALL} />
+                ) : (
+                    tracks.map((track, index) => (
+                        <SongCardContainer>
+                            <SongCard isPublic={isPublic} track={track} playlistId={playlistId} />
+                        </SongCardContainer>
+                    ))
+                )}
+            </ListContainer>
+        </Container>
     )
 }

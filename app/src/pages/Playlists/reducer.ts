@@ -1,8 +1,8 @@
-import { Playlist } from "../../service/playlist";
+import { IPlaylist } from "../../service/playlist";
 import { IPlaylistsAction, SET_PLAYLISTS, ADD_PLAYLIST, REMOVE_PLAYLIST, } from "./actions";
 
 export interface IPlaylistsState {
-    playlists: Playlist[]
+    playlists: IPlaylist[]
 }
 
 export const initialState: IPlaylistsState = {

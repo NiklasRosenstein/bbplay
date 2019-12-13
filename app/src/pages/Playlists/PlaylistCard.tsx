@@ -1,6 +1,6 @@
 import React, { useContext } from 'react'
 import styled from 'styled-components'
-import { Playlist } from '../../service/playlist'
+import { IPlaylist } from '../../service/playlist'
 import { PlaylistsContext } from './Playlists'
 import { AppToaster } from '../../components/Toaster'
 import api from '../../service/apiService'
@@ -10,7 +10,7 @@ import { ListCard } from '../../components/List'
 import { Button, Icon } from '@blueprintjs/core'
 
 interface IPlaylistCardProps {
-    playlist: Playlist
+    playlist: IPlaylist
 }
 
 const OuterCardContainer = styled.div`
