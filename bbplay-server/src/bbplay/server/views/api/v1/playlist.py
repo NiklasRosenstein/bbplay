@@ -78,6 +78,15 @@ def api_v1_playlist_delete(token: Authentication, playlist: str):
   return None, 204
 
 
+# @deprecated()
+@app.route('/api/v1/playlist/<playlist>/tracks', methods=['GET'])
+@orm.db_session()
+@resource()
+def api_v1_playlist_tracks_get(playlist: str) -> 'List[Track]':
+  user = AnonymousUser.get_for_request(request)
+  return [x.to_json(user) for x in Playlist[playlist].tracks.select()]
+
+
 @app.route('/api/v1/playlist/<playlist>/tracks/up-next', methods=['GET'])
 @orm.db_session()
 @resource()
